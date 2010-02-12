@@ -1,0 +1,29 @@
+#hd{
+	height:30px;
+	background-color:#dfdfdf;
+}
+
+#ft{
+	height:25px;
+	background-color:#dfdfdf;
+}
+
+.tweet{
+	height:60px;
+}
+
+.hidden { 
+	display:none;
+}
+
+.tweet .tweet-image {
+float: left;
+width: 60px;
+height: 60px;
+}
+
+.tweet .tweet-body {
+position:relative;
+left:5px;
+top:3px;
+}
