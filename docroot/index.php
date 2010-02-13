@@ -28,7 +28,13 @@ if (isset($_GET['login']))
 	break;
 	}
 }
-
+else if (isset($_GET['logout']))
+{
+	session_destroy();
+	session_regenerate_id();
+	header("Location: http://" . $_SERVER['HTTP_HOST']);
+}
+//print_r($_SESSION);die();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd">
@@ -36,7 +42,7 @@ if (isset($_GET['login']))
 	<head>
 		<title>Tweetanium</title>
 		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
 		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
 		<link rel="stylesheet" href="/css/main.css" type="text/css">
 	</head>
@@ -49,30 +55,49 @@ if (isset($_GET['login']))
 					<div class="yui-b">
 						<div class="yui-gc">
 							<div class="yui-u first" id="timeline">
-								Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas sit amet metus. Nunc quam elit, posuere nec, auctor in, rhoncus quis, dui. Aliquam erat volutpat. Ut dignissim, massa sit amet dignissim cursus, quam lacus feugiat.
 							</div>
-							<div class="yui-u">
-								Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas sit amet metus. Nunc quam elit, posuere nec, auctor in, rhoncus quis, dui. Aliquam erat volutpat. Ut dignissim, massa sit amet dignissim cursus, quam lacus feugiat.
+							<div class="yui-u" id="userInfo">
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="yui-b">
 					<ul>
-						<li><a href="?login">Login</a></li>
-						<li><a href="#timeline=home">Home</a></li>
-						<li><a href="#timeline=mentions">Mentions</a></li>
-						<li><a href="#timeline=sent">Sent</a></li>
-						<li><a href="#timeline=favorites">Favorites</a></li>
-						<li><a href="#timeline=dmin">DM - Received</a></li>
-						<li><a href="#timeline=dmout">DM - Sent</a></li>
+						<? if (!isset($_SESSION['access_token'])) { ?>
+							<li><a href="?login">Login</a></li>
+						<? } else { ?>
+							<li><a href="#timeline=home">Home</a></li>
+							<li><a href="#timeline=mentions">Mentions</a></li>
+							<li><a href="#timeline=sent">Sent</a></li>
+							<li><a href="#timeline=favorites">Favorites</a></li>
+							<li><a href="#timeline=dmin">DM - Received</a></li>
+							<li><a href="#timeline=dmout">DM - Sent</a></li>
+							<li><a href="?logout">Logout</a></li>
+						<? } ?>
 					</ul>
+					
+					<hr />
+					
+					<div>Next update: <span id="countdown"></span></div>
+					<div>Paused: <span class="pseudolink" id="link-pause">Off</span></div>
+					<div>Stopped: <span class="pseudolink" id="link-stop">Off</span></div>
+					
+					<hr />
+					<div class="bold">Rate Limiting</div>
+					<div><span class="bold">Hits remaining</span>: <span id="rate-remaining-hits"></span></div> 
+					<div><span class="bold">Reset</span>: <span  id="rate-reset-time"></span></div>
+					
 				</div>
 			</div>
 			<div id="ft"><p>An @derek production</p></div>
 		</div>
+		
+		
 		<script>
-
+			
+			var _refresh 	= null;
+			//var _since_id 	= null;
+			
 			try { console.log(''); } catch(e) { console = { log: function() {}}; }
 
 			YUI({combo:true}).use('node', 'io-base', 'json', 'selector-css3', 'anim-base', function(Y) {
@@ -101,9 +126,9 @@ if (isset($_GET['login']))
 				}
 				
 				function newState(refresh) {
-					var since_id = 1;
 					var refresh  = refresh || false;
 					var timeline = getHashStringParameter('timeline');
+					var url = null;
 					
 					switch(timeline) {
 						default:
@@ -148,21 +173,29 @@ if (isset($_GET['login']))
 							break;
 
 					}
-					
 					url = "/proxy.php?url=" + url;
-					$(".tweet").each(function(i, t){
-						id = $(t).attr('id').replace("tweetid-", "");
-						if (id > since_id)
-						{
-							since_id = id;
-						}
-					});
 					
-					console.log("All tweets since " + since_id);
+					
+					if (refresh)
+					{
+						$(".tweet").each(function(i, t){
+							id = $(t).attr('id').replace("tweetid-", "");
+							if (id > _since_id)
+							{
+								_since_id = id;
+							}
+						});
+					}
+					else
+					{
+						_since_id = 1;
+					}
+					
+					console.log("All tweets since " + _since_id);
 					
 					Y.io(url, {
 						method: http_method,
-						data: "since_id=" + since_id,
+						data: "since_id=" + _since_id,
 						on: {
 							start: function(){
 								console.log("xhr:start - url:" + url);
@@ -181,7 +214,9 @@ if (isset($_GET['login']))
 									if (refresh === false)
 										Y.one("#timeline").setContent("-");
 									response = response.reverse();
-									setTimeout(refreshState, 30000);
+									clearTimeout(_refresh);
+									_refresh = setTimeout(refreshState, 60000);
+									Y.one("#countdown").set("innerHTML", "60");
 									tweetHandler(response);
 								}
 							},
@@ -193,6 +228,37 @@ if (isset($_GET['login']))
 										
 					
 					//Y.one("#timeline").setContent(window.location.hash);
+				}
+				
+				function getRateLimitStatus() {
+					var url = "http://twitter.com/account/rate_limit_status.json";
+					url = "/proxy.php?url=" + url;
+					
+					Y.io(url, {
+						method: "GET",
+						on: {
+							start: function(){
+								console.log("xhr:start - url:" + url);
+							},
+							complete: function(id, response, args){
+								console.log("xhr:complete");
+								response = Y.JSON.parse(response.responseText);
+							    if (response.error) {
+									errorHandler(response.error);
+								}
+								else {
+									console.log(response);
+									
+									Y.one("#rate-remaining-hits").set("innerHTML", response.remaining_hits );
+									Y.one("#rate-reset-time").set("innerHTML", response.reset_time );
+								}
+							},
+							end: function(){
+								console.log("xhr:end");
+							},
+						}
+					});
+					
 				}
 				
 				function tweetHandler(tweets) {
@@ -214,7 +280,7 @@ if (isset($_GET['login']))
 						html.push("			<a class='tweet-image' href=''><img src='" + tweet.user.profile_image_url + "' height='50' width='50'></a>");
 						html.push("		</div>");
 						html.push("		<div class='tweet-body'>");
-						html.push(tweet.user.screen_name);
+						html.push("			<span class='pseudolink username'>" + tweet.user.screen_name + "</span>");
 						html.push(": ");
 						html.push(tweet.text);
 						html.push("		</div>");
@@ -230,6 +296,63 @@ if (isset($_GET['login']))
 					alert("Error: " + message);
 				}
 				
+				function pauseHandler(){
+					if (Y.one("#link-pause").get("innerHTML") == "Off")
+					{
+						Y.one("#link-pause").setContent("On");
+					}
+					else
+					{
+						Y.one("#link-pause").setContent("Off");
+					}
+				}
+				
+				function stopHandler() {
+					Y.one("#link-stop").setContent("Stopped");
+					clearTimeout(_refresh);
+				}
+				
+				function userHandler(e){
+					var username = Y.one(e.target).get("innerHTML");
+					var url = "http://twitter.com/users/show.json";
+					url = "/proxy.php?url=" + url;
+
+					Y.io(url, {
+						method: "GET",
+						data: "screen_name=" + username,
+						on: {
+							start: function(){
+								console.log("xhr:start - url:" + url);
+							},
+							complete: function(id, response, args){
+								console.log("xhr:complete");
+								response = Y.JSON.parse(response.responseText);
+							    if (response.error) {
+									errorHandler(response.error);
+								}
+								else {
+									var user = response;
+									console.log(response);
+									
+									var html = [];
+									html.push("<div><img src='http://img.tweetimag.es/i/" + user.screen_name + "_o' alt='" + user.screen_name + "' width='250' /></div>");
+									html.push("<p><span class='bold'>Name</span> " + user.name  + "</p>");
+									html.push("<p><span class='bold'>Location</span> " + user.location  + "</p>");
+									html.push("<p><span class='bold'>Web</span> <a href='" + user.url  + "' target='_blank'>" + user.url  + "</a></p>");
+									html.push("<p><span class='bold'>Bio</span> " + user.description  + "</p>");
+									html.push("<p><span class='bold'>Followers</span> " + user.followers_count  + "</p>");
+									html.push("<p><span class='bold'>Following</span> " + user.friends_count  + "</p>");
+									html.push("<p><span class='bold'>Updates</span> " + user.statuses_count  + "</p>");
+									html = html.join('');
+									Y.one("#userInfo").setContent(html);
+								}
+							},
+							end: function(){
+								console.log("xhr:end");
+							},
+						}
+					});
+				}
 				
 				// Load the initial state and loop to detect any URL Hash changes
 				newState();
@@ -243,11 +366,23 @@ if (isset($_GET['login']))
 					}, 50);
 				})()
 				
+				setInterval(function(){
+					var current = Y.one("#countdown").get("innerHTML");
+					current = parseInt(current);
+					Y.one("#countdown").set("innerHTML", current-1);
+				}, 1000);
+				
+				getRateLimitStatus();
+				setInterval(getRateLimitStatus, 300000);
+				
+				Y.on('click', pauseHandler, '#link-pause');
+				Y.on('click', stopHandler, '#link-stop');
+				Y.delegate('click', userHandler, '#timeline', '.username');
 			});
 			
 			// Show any hidden tweets
 			setInterval(function(){
-				if ($(".tweet:hidden").length > 0)
+				if ($(".tweet:hidden").length > 0 && $("#link-pause").html() == "Off")
 				{
 					$(".tweet:hidden:last").slideDown("fast");
 				}

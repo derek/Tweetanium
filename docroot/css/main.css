@@ -27,3 +27,13 @@ position:relative;
 left:5px;
 top:3px;
 }
+
+.bold{
+	font-weight:bold;
+}
+
+a, .pseudolink {
+color:blue;
+cursor: pointer;
+text-decoration: underline;
+}
