@@ -28,6 +28,10 @@ left:5px;
 top:3px;
 }
 
+.tweet .tweet-footer {
+color:#999999;
+}
+
 .bold{
 	font-weight:bold;
 }
@@ -37,3 +41,18 @@ color:blue;
 cursor: pointer;
 text-decoration: underline;
 }
+
+
+
+#sidebox {
+	float:right;
+	position:absolute;
+	right: 0;
+	top: 30px;
+	width: 250px;
+	background-color:#C0DFEC;
+	color:black;
+	padding:10px;
+}
+
+
