@@ -1,0 +1,4 @@
+# Tell 1&1 hosting we want to use PHP5
+AddType x-mapp-php5 .php
+AddHandler x-mapp-php5 .php
+
