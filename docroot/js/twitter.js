@@ -28,9 +28,12 @@ YUI.add('Twitter', function(Y) {
 						throw("Invalid Twitter API method");
 						break;
 				}
-				
-			} else {
-				yql = 'SELECT * FROM twitter.search WHERE ' + where.field + ' = ' + where.value + ' AND q="' + (request.query) + '";';
+			}
+			else if (request.type == "search") {
+				yql = 'SELECT * FROM twitter.search WHERE ' + where.field + ' = ' + where.value + ' AND q="' + (request.timeline) + '";';
+			}
+			else {
+				throw("Unknown request type");
 			}
 			
 			if (yql) {
@@ -38,14 +41,15 @@ YUI.add('Twitter', function(Y) {
 					on: {
 						start: function(){ /* nothing */ },
 						complete: function(id, response, args){
-							var rawTweets = []
-							var response = Y.JSON.parse(response.responseText);
+							var Tweets 		= [];
+							var rawTweets	= [];
+							var response 	= Y.JSON.parse(response.responseText);
 							
 							if (response.error) {
 								errorHandler(response.error);
-							} else {
-								if(response.results)
-								{
+							} 
+							else {
+								if(response.results) {
 									if (response.results.results) {
 										rawTweets = response.results.results;
 									}
@@ -66,8 +70,8 @@ YUI.add('Twitter', function(Y) {
 										Tweets.push(Tweet);
 									}
 							
-									callback(Tweets, context);
 								}
+								callback(Tweets, context);
 							}
 						},
 						end: function(){ /* nothing */ },
