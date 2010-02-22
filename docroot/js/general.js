@@ -37,9 +37,13 @@ YUI({
 	
 	/******** Timeline *********/
 	
-	function Timeline(request) {
+	var Timeline = {
 
-		this.constructor = function(request){
+		init: function(request){
+			if (!request) {
+				throw new ("Missing request param");
+			}
+			
 			this.active 	= true;
 			this.timer 		= 60000;
 			this.timelineId = new Date().getTime();
@@ -70,14 +74,14 @@ YUI({
 			return this;
 		},
 
-		this.destroy = function(){
+		destroy: function(){
 			console.log("Timeline {" + this.alias + " - " + this.timelineId + "} destroyed");
 			clearInterval(this.timer);
 			this.active = false;
 			return this;
 		},
 
-		this.update = function(that) {
+		update: function(that) {
 			console.log("Timeline {" + that.alias + " - " + that.timelineId + "} updating...");
 			where = {
 				field : "since_id",
@@ -86,18 +90,19 @@ YUI({
 			that.addBucket("prepend").getTweets(that.request, where);
 		}, 
 
-		this.beginTimer = function(ms){
+		beginTimer: function(ms){
 			this.timer = setInterval(this.update, ms, this);
 		}, 
 
-		this.addBucket = function(where){
+		addBucket: function(where){
 			if (this.active === false)
 			{
 				throw("Timeline {" + this.alias + "} is dead");
 			}
 
-			var B = new Bucket();
-
+			var B = Object.create(Bucket);
+			B.init();
+			
 			console.log(where + "ing bucketId {" + B.bucketId + "} to timeline {" + this.alias + "}");
 
 			switch(where) {
@@ -118,7 +123,7 @@ YUI({
 		},
 		
 		
-		this.lowestTweetId = function() {
+		lowestTweetId: function() {
 			var tweet_id = 9999999999999999;
 
 			Y.all(".tweet").each(function(tweet){
@@ -132,7 +137,7 @@ YUI({
 			return tweet_id;
 		},
 		
-		this.highestTweetId = function() {
+		highestTweetId: function() {
 			var tweet_id = 1;
 
 			Y.all(".tweet").each(function(tweet){
@@ -145,23 +150,7 @@ YUI({
 
 			return tweet_id;
 		},
-		/*, 
-
-		this.get = function(timelineId) {
-			console.log("getting - " + timelineId);
-			for(var i in Timelines)
-			{
-				console.log(Timelines.timelineId);
-				if (Timelines[i].timelineId == timelineId)
-				{
-					console.log("got - " + Timelines[i].timelineId.timelineId);
-					return Timelines[i];
-				}
-			}
-		}*/
-
-		this.constructor(request);
-	};
+	}
 	
 	
 	
@@ -171,44 +160,55 @@ YUI({
 	
 	
 	
-	function Bucket() {
-		return this.constructor();
+	
+	
+	
+	
+	var Bucket = {
+		bucketId: 0,
+		
+		init: function() {
+			this.bucketId = new Date().getTime();
+			console.log("Bucket {" + this.bucketId + "} created");
+			return this;
+		},
+		
+		asHtml: function() {
+			var html = [];
+
+			html.push("<div style='border:solid black 1px' id='bucketId-{bucketId}'>");
+			html.push("<div>BucketID-{bucketId}</div>");
+			html.push("<div class='inner'></div>");
+			html.push("</div>");
+
+			return html.join('').supplant({
+				bucketId: this.bucketId,
+			});
+		},
+		
+		getTweets: function(request, where) {
+			that = this;
+			var Tweets = Twitter.call(request, function(Tweets, context){
+				context.addTweets(Tweets);
+			}, where, that);
+		},
+		
+		addTweets: function(Tweets) {
+			//console.log(Tweets);
+			var html = [];
+
+			for(var i in Tweets) {
+				html.push(Tweets[i].asHtml());
+			}
+
+			html = html.join('');
+			Y.one("#bucketId-" + this.bucketId + ' .inner').set("innerHTML", html);
+		},
 	}
-
-	Bucket.prototype.constructor = function() {
-		this.bucketId = new Date().getTime();
-		console.log("Bucket {" + this.bucketId + "} created");
-		return this;
-	};
-
-	Bucket.prototype.asHtml = function() {
-		var html = [];
-
-		html.push("<div style='border:solid black 1px' id='bucketId-" + this.bucketId + "'>");
-		html.push("<div>BucketID-" + this.bucketId + "</div>");
-		html.push("<div class='inner'></div>");
-		html.push("</div>");
-
-		return html.join('');
-	};
-
-	Bucket.prototype.addTweets = function(Tweets) {
-		var html = [];
-
-		for(var i in Tweets) {
-			html.push(Tweets[i].asHtml());
-		}
-
-		html = html.join('');
-		Y.one("#bucketId-" + this.bucketId + ' .inner').set("innerHTML", html);
-	};
-
-	Bucket.prototype.getTweets = function(request, where) {
-		that = this;
-		var Tweets = Twitter.call(request, function(Tweets){
-			that.addTweets(Tweets);
-		}, where);
-	};
+	
+	
+	
+	
 	
 	
 	
@@ -218,73 +218,59 @@ YUI({
 	
 	/******** TWEET *********/
 	
-	
-	
-	
-	
-	function Tweet(data) {
-		this.constructor(data);
-		
-		return this;
-	};
-	
-	Tweet.prototype.constructor = function(data){
-		
-		if (data.sender) // Is a DM
-		{
-			this.user_profile_image_url = tweet.sender.profile_image_url;
-			this.user_screen_name = tweet.sender.screen_name;
-		}
-		else if (data.user) // Is a regular tweet
-		{
-			this.id 			= data.id;
-			this.text			= data.text;
-			this.userName 		= data.user.screen_name;
-			this.profileImage 	= data.user.profile_image_url;
-		
-			values = data.created_at.split(" ");
-			this.created_at = relative_time(Date.parse( values[1] + " " + values[2] + ", " + values[5] + " " + values[3]));
-		}
-		
-		else // Comes from search
-		{
-			this.id 			= data.id;
-			this.text			= data.text;
-			this.userName 		= data.from_user;
-			this.profileImage 	= data.profile_image_url;
+	var Tweet = {
+		init: function(data){
 
-			values = data.created_at.split(" ");
-			this.created_at = relative_time(Date.parse(values[2] + " " + values[1] + ", " + values[3] + " " + values[4]));
+			if (data.sender) // Is a DM
+			{
+				this.user_profile_image_url = tweet.sender.profile_image_url;
+				this.user_screen_name = tweet.sender.screen_name;
+			}
+			else if (data.user) // Is a regular tweet
+			{
+				this.id 			= data.id;
+				this.text			= data.text;
+				this.userName 		= data.user.screen_name;
+				this.profileImage 	= data.user.profile_image_url;
+
+				values = data.created_at.split(" ");
+				this.created_at = relative_time(Date.parse( values[1] + " " + values[2] + ", " + values[5] + " " + values[3]));
+			}
+
+			else // Comes from search
+			{
+				this.id 			= data.id;
+				this.text			= data.text;
+				this.userName 		= data.from_user;
+				this.profileImage 	= data.profile_image_url;
+
+				values = data.created_at.split(" ");
+				this.created_at = relative_time(Date.parse(values[2] + " " + values[1] + ", " + values[3] + " " + values[4]));
+			}
+		},
+		asHtml: function() {
+			var html = [];
+
+			this.text = this.text.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi,'<a href="$1" target="_blank">$1<\/a>');
+			this.text = this.text.replace(/@([a-zA-Z0-9_]+)/gi,'<span class="pseudolink username">@$1<\/span>');
+			this.text = this.text.replace(/#([a-zA-Z0-9_]+)/gi,'<a class="query" href="#query=#$1">#$1<\/a>');
+
+			html.push("<div class='tweet' id='tweetid-{id}'>");
+			html.push("		<div>");
+			html.push("			<a class='tweet-image' href=''><img src='{profileImage}' height='50' width='50'></a>");
+			html.push("		</div>");
+			html.push("		<div class='tweet-body'>");
+			html.push("			<span class='pseudolink username'>{userName}</span>: {text}");
+			html.push("		<div class='tweet-footer'>{created_at}</div>");
+			html.push("		</div>");
+			html.push("		<div style='clear:both'></div>");
+			html.push("</div>");
+
+			html = html.join('').supplant(this);
+
+			return html;
 		}
-		
-	};
-	
-	Tweet.prototype.asHtml = function() {
-		var html = [];
-		
-		this.text = this.text.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi,'<a href="$1" target="_blank">$1<\/a>');
-		this.text = this.text.replace(/@([a-zA-Z0-9_]+)/gi,'<span class="pseudolink username">@$1<\/span>');
-		this.text = this.text.replace(/#([a-zA-Z0-9_]+)/gi,'<a class="query" href="#query=#$1">#$1<\/a>');
-		
-		html.push("<div class='tweet' id='tweetid-" + this.id + "'>");
-		html.push("		<div>");
-		html.push("			<a class='tweet-image' href=''><img src='" + this.profileImage + "' height='50' width='50'></a>");
-		html.push("		</div>");
-		html.push("		<div class='tweet-body'>");
-		html.push("			<span class='pseudolink username'>" + this.userName + "</span>");
-		html.push(": ");
-		html.push(this.text);
-		html.push("		<div class='tweet-footer'>");
-		html.push(this.created_at);
-		html.push("		</div>");
-		html.push("		</div>");
-		html.push("		<div style='clear:both'></div>");
-		html.push("</div>");
-		
-		html = html.join('');
-		
-		return html;
-	};
+	}
 	
 	
 	
@@ -295,8 +281,8 @@ YUI({
 	
 	
 	var Twitter = {
-		call : function(request, callback, where) { 
-			Tweets = [];
+		call : function(request, callback, where, context) { 
+			var Tweets = [];
 			if (request.type == "timeline") {
 				switch(request.timeline) {
 					case "home":
@@ -358,10 +344,12 @@ YUI({
 								}
 								
 								for (var i in rawTweets){ 
-									Tweets.push(new Tweet(rawTweets[i]));
+									T = Object.create(Tweet);
+									T.init(rawTweets[i]);
+									Tweets.push(T);
 								}
 								
-								callback(Tweets);
+								callback(Tweets, context);
 							}
 						}
 					},
@@ -463,8 +451,9 @@ YUI({
 					thing.type		= "search";
 					thing.query 	= query
 				}
-				
-				window.Timelines.push(new Timeline(thing));
+				T = Object.create(Timeline);
+				T.init(thing);
+				window.Timelines.push(T);
 		    }
 		}, 500);
 	})();
