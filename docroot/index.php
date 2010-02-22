@@ -49,12 +49,12 @@ else if (isset($_GET['logout']))
 	</head>
 	<body>
 		
-		<div id="doc4" class="yui-t2">
+		<div id="doc4" class="yui-t1">
 			<div id="hd"><h1>Tweetanium</h1></div>
 			<div id="bd">
 				<div id="yui-main">
 					<div class="yui-b">
-						<div class="yui-gc">
+						<div class="yui-ge">
 							<div class="yui-u first" id="timeline">
 								<div class="inner"></div>
 							</div>
