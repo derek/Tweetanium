@@ -1,3 +1,4 @@
+// Globals
 var Timelines = [];
 
 YUI({
@@ -38,7 +39,7 @@ YUI({
 	
 	function newState() {
 		var state 	 = null;
-		var thing 	 = {};
+		var config 	 = {};
 		var Timeline = {};
 		var timelineCount = 0;
 		
@@ -48,18 +49,24 @@ YUI({
 			Timelines.splice(i, 1); // Splice, instead of delete, to not leave any holes in the array.
 		}
 		
-		state = getHashStringParameter('timeline');
-		if (state) {
-			thing.type		= "timeline";
-			thing.timeline 	= state
-		} else {
-			state = getHashStringParameter('query');
-			thing.type		= "search";
-			thing.query 	= state
+		if (state = getHashStringParameter('timeline')) {
+			config = {
+				type: 		"timeline",
+				timeline: 	state
+			};
+		} 
+		else if (state = getHashStringParameter('query')) {
+			config = {
+				type: 		"search",
+				timeline: 	state
+			};
+		}
+		else {
+			throw("Unkown state");
 		}
 		
 		Timeline = Object.create(Y.Timeline);
-		Timeline.init(thing);
+		Timeline.init(config);
 		
 		window.Timelines.push(Timeline);
 	}
@@ -85,6 +92,7 @@ YUI({
 	
 });
 
+// Helper functions
 
 function getHashStringParameter(parameter){
 	var queryString = {};
@@ -130,3 +138,6 @@ function relative_time(parsed_date) {
 		return (parseInt(delta / 86400)).toString() + ' days ago';
 	}
 }
+
+// To prevent the "Console is undefined" bug
+try { console.log(''); } catch(e) { console = { log: function() {}}; }
