@@ -15,9 +15,8 @@ YUI.add('Bucket', function(Y) {
 		asHtml: function() {
 			var html = [];
 
-			html.push("<div style='border:solid black 1px' id='bucketId-{bucketId}'>");
-			html.push("<div>BucketID-{bucketId}</div>");
-			html.push("<div class='inner'></div>");
+			html.push("<div style='border-top:solid #bfbfbf 2px' id='bucketId-{bucketId}'>");
+			html.push("<div class='inner'><div align='center'><img src='/images/ajax.gif'></div></div>");
 			html.push("</div>");
 
 			return html.join('').supplant({
