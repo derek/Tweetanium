@@ -5,16 +5,16 @@ YUI.add('Timeline', function(Y) {
 		// Properties
 		timer: null,
 		active: true,
-		interval: 60000,
+		interval: 62000,
 		
 		// Methods
-		init: function(request) {
-			if (!request) { throw new ("Missing request param"); }
+		init: function(config) {
+			if (!config) { throw new ("Missing config param"); }
 			
 			this.timelineId = new Date().getTime();
-			this.request 	= request;
+			this.config 	= config;
 
-			console.log("Timeline {" + request.type + " - " + this.timelineId + "} created");
+			console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
 			Y.one("#timeline").get('children').remove(true);
 
@@ -29,7 +29,7 @@ YUI.add('Timeline', function(Y) {
 					field : "max_id",
 					value : that.lowestTweetId(),
 				};
-				getTimeline(timelineId).addBucket("append").getTweets(that.request, where);
+				getTimeline(timelineId).addBucket("append").getTweets(that.config, where);
 			});
 
 			Y.one("#timeline").append(N);
@@ -47,12 +47,12 @@ YUI.add('Timeline', function(Y) {
 		},
 
 		update: function(that) {
-			console.log("Timeline {" + that.alias + " - " + that.timelineId + "} updating...");
+			console.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
 			var where = {
 				field : "since_id",
 				value : getTimeline(that.timelineId).highestTweetId(),
 			};
-			that.addBucket("prepend").getTweets(that.request, where);
+			that.addBucket("prepend").getTweets(that.config, where);
 		},
 
 		addBucket: function(where) {
@@ -65,7 +65,7 @@ YUI.add('Timeline', function(Y) {
 			var Bucket = Object.create(Y.Bucket);
 			Bucket.init();
 			
-			console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.alias + "}");
+			console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
 
 			switch(where) {
 				case "append" : 
@@ -113,7 +113,7 @@ YUI.add('Timeline', function(Y) {
 		},
 		
 		destroy: function() {
-			console.log("Timeline {" + this.alias + " - " + this.timelineId + "} destroyed");
+			console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} destroyed");
 			clearInterval(this.timer);
 			this.active = false;
 		},
