@@ -49,26 +49,29 @@ YUI.add('Tweet', function(Y) {
 		},
 		
 		asHtml: function() {
-			var html = [];
+			data = this;
+			return function(){
+				var html = [];
 
-			this.text = this.text.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi,'<a href="$1" target="_blank">$1<\/a>');
-			this.text = this.text.replace(/@([a-zA-Z0-9_]+)/gi,'<span class="pseudolink username">@$1<\/span>');
-			this.text = this.text.replace(/#([a-zA-Z0-9_]+)/gi,'<a class="query" href="#query=#$1">#$1<\/a>');
+				data.text = data.text.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi,'<a href="$1" target="_blank">$1<\/a>');
+				data.text = data.text.replace(/@([a-zA-Z0-9_]+)/gi,'<span class="pseudolink username">@$1<\/span>');
+				data.text = data.text.replace(/#([a-zA-Z0-9_]+)/gi,'<a class="query" href="#query=#$1">#$1<\/a>');
 
-			html.push("<div class='tweet' id='tweetid-{id}'>");
-			html.push("		<div>");
-			html.push("			<a class='tweet-image' href=''><img src='{profileImage}' height='50' width='50'></a>");
-			html.push("		</div>");
-			html.push("		<div class='tweet-body'>");
-			html.push("			<span class='pseudolink username'>{userName}</span>: {text}");
-			html.push("		<div class='tweet-footer'><span class='timestamp' title='{createdAt}'>{createdAgo}</span></div>");
-			html.push("		</div>");
-			html.push("		<div style='clear:both'></div>");
-			html.push("</div>");
+				html.push("<div class='tweet' id='tweetid-{id}'>");
+				html.push("		<div>");
+				html.push("			<a class='tweet-image' href=''><img src='{profileImage}' height='50' width='50'></a>");
+				html.push("		</div>");
+				html.push("		<div class='tweet-body'>");
+				html.push("			<span class='pseudolink username'>{userName}</span>: {text}");
+				html.push("		<div class='tweet-footer'><span class='timestamp' title='{createdAt}'>{createdAgo}</span></div>");
+				html.push("		</div>");
+				html.push("		<div style='clear:both'></div>");
+				html.push("</div>");
 
-			html = html.join('').supplant(this);
+				html = html.join('').supplant(data);
 
-			return html;
+				return html;
+			}();
 		}
 		
 	}; // End of Tweet

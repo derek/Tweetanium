@@ -2,7 +2,7 @@
 var Timelines = [];
 
 YUI({
-	combine: true,
+	//combine: true,
 	modules: {
 		'gallery-yql': {
 			fullpath: 'http://yui.yahooapis.com/gallery-2010.01.27-20/build/gallery-yql/gallery-yql-min.js',
@@ -34,8 +34,14 @@ YUI({
 			optional: [],
 			supersedes: []
 		},
+		'User': {
+			fullpath: 'http://tweetanium.net/js/user.js',
+			requires: [],
+			optional: [],
+			supersedes: []
+		},
 	}
-}).use('node', 'Timeline', 'Bucket', 'Tweet', 'Twitter', function(Y) {
+}).use('node', 'dom', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', function(Y) {
 	
 	function newState() {
 		var state 	 = null;
@@ -44,6 +50,7 @@ YUI({
 		var timelineCount = 0;
 		
 		timelineCount = Timelines.length;
+		
 		for(var i=0; i < timelineCount; i++) {
 			Timelines[i].destroy();
 			Timelines.splice(i, 1); // Splice, instead of delete, to not leave any holes in the array.
@@ -62,13 +69,15 @@ YUI({
 			};
 		}
 		else {
-			throw("Unkown state");
+			throw ("Unknown state");
 		}
 		
-		Timeline = Object.create(Y.Timeline);
-		Timeline.init(config);
-		
-		window.Timelines.push(Timeline);
+		if (config.timeline) {
+			Timeline = Object.create(Y.Timeline);
+			Timeline.init(config);
+
+			window.Timelines.push(Timeline);
+		}
 	}
 	
 	// Recalculate timestamps
@@ -79,9 +88,12 @@ YUI({
 	}, 60000);
 	
 	// Load the initial state and loop to detect any URL Hash changes
-	newState();
+	setTimeout(newState, 100);
 	(function () {
 		var lastHash = location.hash;
+		if (lastHash == '')
+			window.location.hash = "#timeline=home";
+			
 		return setInterval(function() {
 		    if(lastHash !== location.hash) {
 				lastHash = location.hash;
@@ -90,9 +102,82 @@ YUI({
 		}, 500);
 	})();
 	
+	
+	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
+	Y.delegate('click', userHandler, '#timeline', '.username');
+	
+	function closeSideboxHandler() {
+		Y.one("#sidebox").addClass("hidden");
+	}
+	
+	function userHandler(e){
+		var User = Object.create(Y.User);
+		var username = Y.one(e.target).get("innerHTML");
+		
+		User.init({"username":username});
+		User.load(function(U){
+			Y.one("#sidebox .inner").setContent(U.asHtml());
+			Y.one("#sidebox").removeClass("hidden");
+		});
+	}
+	
+	var allowUpdate = true;
+	function unlockUpdating() {
+		allowUpdate = true;
+	}
+	
+	window.onscroll = function() {
+		/* <auto-update> */
+		    var st = (document.documentElement.scrollTop || document.body.scrollTop);
+		    var wh = (window.innerHeight && window.innerHeight < Y.DOM.winHeight()) ? window.innerHeight : Y.DOM.winHeight();
+		
+			var coverage = st + wh;
+			var docHeight = Y.DOM.docHeight();
+		
+			if (coverage > (docHeight - 0) && blah) {
+				var t = Timelines[0];
+				where = {
+					field : "max_id",
+					value : t.lowestTweetId(),
+				};
+				t.addBucket("append").getTweets(t.config, where);
+			
+				allowUpdate = false;
+				setTimeout(unlockUpdating, 3000);
+			}
+		/* </auto-update> */
+		
+		
+		/* <sticky sidebox> */
+			var offset = 30;
+			if( window.XMLHttpRequest ) {
+				//Moving
+				if (document.documentElement.scrollTop > offset || self.pageYOffset > offset) {
+					document.getElementById('sidebox').style.position = 'fixed';
+					document.getElementById('sidebox').style.top = 0;
+				} 
+				// At top
+				else if (document.documentElement.scrollTop < offset || self.pageYOffset < offset) {
+					document.getElementById('sidebox').style.position = 'absolute';
+					document.getElementById('sidebox').style.top = offset + 'px';
+				}
+			}
+		/* </sticky sidebox> */
+	}
 });
 
 // Helper functions
+
+function ratelimit(fn, ms) {
+    var last = (new Date()).getTime();
+    return (function() {
+        var now = (new Date()).getTime();
+        if (now - last > ms) {
+            last = now;
+            fn.apply(null, arguments);
+        }
+    });
+}
 
 function getHashStringParameter(parameter){
 	var queryString = {};
@@ -139,5 +224,7 @@ function relative_time(parsed_date) {
 	}
 }
 
+
+
 // To prevent the "Console is undefined" bug
-try { console.log(''); } catch(e) { console = { log: function() {}}; }
+try { console.log('Console ready...'); } catch(e) { console = { log: function() {}}; }

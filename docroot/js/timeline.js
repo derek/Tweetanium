@@ -5,6 +5,7 @@ YUI.add('Timeline', function(Y) {
 		// Properties
 		timer: null,
 		active: true,
+		updating: false,
 		interval: 62000,
 		
 		// Methods
@@ -20,7 +21,7 @@ YUI.add('Timeline', function(Y) {
 
 			Y.one("#timeline").append("<div class='inner'></div>");
 
-			N = Y.Node.create("<div id='load-more-bucket-" + this.timelineId + "' align='center' class='pseudolink'>Load More</div>");
+			/*N = Y.Node.create("<div id='load-more-bucket-" + this.timelineId + "' align='center' class='dd pseudolink'>Load More</div>");
 
 			N.on("click", function(e){
 				timelineId = e.target.get("id").replace("load-more-bucket-", "");
@@ -33,7 +34,7 @@ YUI.add('Timeline', function(Y) {
 			});
 
 			Y.one("#timeline").append(N);
-			
+*/		
 			setTimeout(this.update, 0, this); // TODO: figure out why this works the way it does and the normal way doesn't
 			//this.update(this);
 			
@@ -63,7 +64,7 @@ YUI.add('Timeline', function(Y) {
 			}
 
 			var Bucket = Object.create(Y.Bucket);
-			Bucket.init();
+			Bucket.init(this);
 			
 			console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
 

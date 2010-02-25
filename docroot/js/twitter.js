@@ -1,8 +1,8 @@
 YUI.add('Twitter', function(Y) {
 
 	Y.Twitter = {
+		
 		call : function(request, callback, where, context) {
-			
 			var Tweets 	= [];
 			var yql 	= false;
 			
@@ -14,6 +14,14 @@ YUI.add('Twitter', function(Y) {
 
 					case "sent":
 						yql = 'SELECT * FROM twitter.status.timeline.user 		WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+						break;
+
+					case "mentions":
+						yql = 'use "http://github.com/zachgraves/yql-tables/raw/master/twitter/twitter.status.mentions.xml" as twitter.status.mentions; SELECT * FROM twitter.status.mentions	 		WHERE  #oauth#;';
+						break;
+
+					case "favorites":
+						yql = 'SELECT * FROM twitter.favorites			 		WHERE id=' + _user_id + ' AND #oauth#;';
 						break;
 
 					case "dmin":	
@@ -29,9 +37,11 @@ YUI.add('Twitter', function(Y) {
 						break;
 				}
 			}
+			
 			else if (request.type == "search") {
 				yql = 'SELECT * FROM twitter.search WHERE ' + where.field + ' = ' + where.value + ' AND q="' + (request.timeline) + '";';
 			}
+			
 			else {
 				throw("Unknown request type");
 			}

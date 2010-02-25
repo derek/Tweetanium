@@ -6,6 +6,7 @@
 #ft{
 	height:25px;
 	background-color:#dfdfdf;
+	display:none;
 }
 
 .tweet{
@@ -47,12 +48,12 @@ text-decoration: underline;
 #sidebox {
 	float:right;
 	position:absolute;
-	right: 0;
-	top: 30px;
-	width: 250px;
+	right:0px;
+	width: 185px;
 	background-color:#C0DFEC;
 	color:black;
 	padding:10px;
+	overflow:hidden;
 }
 
 

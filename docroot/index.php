@@ -41,6 +41,9 @@ else if (isset($_GET['logout']))
 <html>
 	<head>
 		<title>Tweetanium</title>
+		<script>
+			_user_id = '<?= $_SESSION['access_token']['user_id'] ?>'
+		</script>
 		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
 		<script type="text/javascript" src="/js/crock.js"></script>
 		<script type="text/javascript" src="/js/general.js"></script>
@@ -58,7 +61,9 @@ else if (isset($_GET['logout']))
 							<div class="yui-u first" id="timeline">
 								<div class="inner"></div>
 							</div>
-							<div class="yui-u" id="userInfo">
+							<div class="yui-u hidden" id="sidebox">
+								<div align="right" class="pseudolink" id="link-close-sidebox">Close</div>
+								<div class="inner"></div>
 							</div>
 						</div>
 					</div>
@@ -78,8 +83,8 @@ else if (isset($_GET['logout']))
 						<? } ?>
 					</ul>
 					
+					<!--
 					<hr />
-					
 					<div>Next update: <span id="countdown"></span></div>
 					<div>Paused: <span class="pseudolink" id="link-pause">Off</span></div>
 					<div>Stopped: <span class="pseudolink" id="link-stop">Off</span></div>
@@ -89,7 +94,7 @@ else if (isset($_GET['logout']))
 					<div class="bold">Rate Limiting</div>
 					<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
 					<div>Reset: <span  id="rate-reset-time"></span></div>
-					
+					-->
 				</div>
 			</div>
 			
