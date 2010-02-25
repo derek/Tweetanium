@@ -134,7 +134,7 @@ YUI({
 			var coverage = st + wh;
 			var docHeight = Y.DOM.docHeight();
 		
-			if (coverage > (docHeight - 0) && blah) {
+			if (coverage >= (docHeight - 0) && allowUpdate) {
 				var t = Timelines[0];
 				where = {
 					field : "max_id",
