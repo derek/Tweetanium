@@ -74,6 +74,12 @@ YUI({
 				timeline: 	state
 			};
 		}
+		else if (list = getHashStringParameter('list')) {
+			config = {
+				type: 		"list",
+				timeline: 	list
+			};
+		}
 		else {
 			throw ("Unknown state");
 		}
@@ -158,7 +164,7 @@ YUI({
 				var t = Timelines[0];
 				where = {
 					field : "max_id",
-					value : t.lowestTweetId(),
+					value : t.lowestTweetId() - 1,
 				};
 				t.addBucket("append").getTweets(t.config, where);
 			
