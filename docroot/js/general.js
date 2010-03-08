@@ -40,8 +40,14 @@ YUI({
 			optional: [],
 			supersedes: []
 		},
+		'List': {
+			fullpath: 'http://tweetanium.net/js/list.js',
+			requires: [],
+			optional: [],
+			supersedes: []
+		},
 	}
-}).use('node', 'dom', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', function(Y) {
+}).use('node', 'dom', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function(Y) {
 	
 	function newState() {
 		var state 	 = null;
@@ -102,6 +108,20 @@ YUI({
 		}, 500);
 	})();
 	
+	// Load in the user's lists
+	(function(){
+		var request = {};
+		request.type = "lists";
+		Y.Twitter.call(request, function(lists){
+			var html = '';
+			for(var i in lists) {
+				List = Object.create(Y.List);
+				List.init(lists[i]);
+				html += List.asHtml();
+			}
+			Y.one("#lists").set("innerHTML", html);
+		});
+	})()
 	
 	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
 	Y.delegate('click', userHandler, '#timeline', '.username');

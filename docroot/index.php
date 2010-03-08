@@ -41,12 +41,6 @@ else if (isset($_GET['logout']))
 <html>
 	<head>
 		<title>Tweetanium</title>
-		<script>
-			_user_id = '<?= $_SESSION['access_token']['user_id'] ?>'
-		</script>
-		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
-		<script type="text/javascript" src="/js/crock.js"></script>
-		<script type="text/javascript" src="/js/general.js"></script>
 		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
 		<link rel="stylesheet" href="/css/main.css" type="text/css">
 	</head>
@@ -82,6 +76,12 @@ else if (isset($_GET['logout']))
 							<li><a href="?logout">Logout</a></li>
 						<? } ?>
 					</ul>
+					<hr />
+					
+					<ul id="lists"></ul>
+					<hr />
+					
+					<ul id="trending"></ul>
 					
 					<!--
 					<hr />
@@ -106,5 +106,12 @@ else if (isset($_GET['logout']))
 			</div>
 			
 		</div>
+		
+		<script>
+			_user_id = '<?= $_SESSION['access_token']['user_id'] ?>'
+		</script>
+		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
+		<script type="text/javascript" src="/js/crock.js"></script>
+		<script type="text/javascript" src="/js/general.js"></script>
 	</body>
 </html>

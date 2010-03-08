@@ -18,26 +18,10 @@ YUI.add('Timeline', function(Y) {
 			console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
 			Y.one("#timeline").get('children').remove(true);
-
 			Y.one("#timeline").append("<div class='inner'></div>");
 
-			/*N = Y.Node.create("<div id='load-more-bucket-" + this.timelineId + "' align='center' class='dd pseudolink'>Load More</div>");
-
-			N.on("click", function(e){
-				timelineId = e.target.get("id").replace("load-more-bucket-", "");
-				var that = getTimeline(timelineId);
-				where = {
-					field : "max_id",
-					value : that.lowestTweetId(),
-				};
-				getTimeline(timelineId).addBucket("append").getTweets(that.config, where);
-			});
-
-			Y.one("#timeline").append(N);
-*/		
 			setTimeout(this.update, 0, this); // TODO: figure out why this works the way it does and the normal way doesn't
-			//this.update(this);
-			
+
 			this.beginTimer();
 
 			return this;
