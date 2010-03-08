@@ -141,9 +141,11 @@ YUI({
 		var username = Y.one(e.target).get("innerHTML");
 		
 		User.init({"username":username});
+		Y.one("#sidebox .inner").setContent("Loading...");
+		Y.one("#sidebox").removeClass("hidden");
+		
 		User.load(function(U){
 			Y.one("#sidebox .inner").setContent(U.asHtml());
-			Y.one("#sidebox").removeClass("hidden");
 		});
 	}
 	
