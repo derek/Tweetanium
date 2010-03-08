@@ -57,7 +57,7 @@ YUI.add('User', function(Y) {
 				html.push("<p>&nbsp;</p>");
 				html.push("<p><a href='#query=from:{screen_name}'>View {screen_name}'s Tweets</a></p>");
 				html.push("<p><a href='#query=to:{screen_name}'>View {screen_name}'s Mentions</a></p>");
-				html.push("<p><a href='http://twitter.com/{screen_name}'>View {screen_name}'s Twitter Page</a></p>");
+				html.push("<p><a href='http://twitter.com/{screen_name}' target='_blank'>View {screen_name}'s Twitter Page</a></p>");
 				//html.push("<div id='friendship-detail'><span class='link-friendship pseudolink'>See Friendship Info</span></div>");
 
 				html = html.join('').supplant(data);
