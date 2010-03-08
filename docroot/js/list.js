@@ -10,9 +10,9 @@ YUI.add('List', function(Y) {
 			return function(){
 				var html = [];
 				
-				html.push("<ol class='list'>");
-				html.push("		<div>{name}</div>");
-				html.push("</ol>");
+				html.push("<li class='list'>");
+				html.push("		<div><a href='#list={id}'>{name}</a></div>");
+				html.push("</li>");
 
 				html = html.join('').supplant(data);
 
