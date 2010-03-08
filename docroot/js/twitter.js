@@ -5,6 +5,8 @@ YUI.add('Twitter', function(Y) {
 		call : function(request, callback, where, context) {
 			var Tweets 	= [];
 			var yql 	= false;
+			var responseHandler = false;
+			
 			if (request.type == "timeline") {
 				switch(request.timeline) {
 					case "home":
@@ -16,7 +18,8 @@ YUI.add('Twitter', function(Y) {
 						break;
 
 					case "mentions":
-						yql = 'use "http://github.com/zachgraves/yql-tables/raw/master/twitter/twitter.status.mentions.xml" as twitter.status.mentions; SELECT * FROM twitter.status.mentions	 		WHERE  #oauth#;';
+						//yql = 'use "http://github.com/zachgraves/yql-tables/raw/master/twitter/twitter.status.mentions.xml" as twitter.status.mentions;';
+						yql = 'SELECT * FROM twitter.status.mentions	 		WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					case "favorites":
@@ -35,17 +38,23 @@ YUI.add('Twitter', function(Y) {
 						throw("Invalid Twitter API method");
 						break;
 				}
-				var responseHandler = this.tweetHander;
+				responseHandler = this.tweetHander;
 			}
 			
 			else if (request.type == "search") {
 				yql = 'SELECT * FROM twitter.search WHERE ' + where.field + ' = ' + where.value + ' AND q="' + (request.timeline) + '";';
-				var responseHandler = this.tweetHander;
+				responseHandler = this.tweetHander;
 			}
 			
 			else if (request.type == "lists") {
-				yql = 'SELECT * FROM twitter.lists 						WHERE user="derek" AND #oauth#;';
-				var responseHandler = this.listHander;
+				yql = 'SELECT * FROM twitter.lists WHERE user="derek" AND #oauth#;';
+				responseHandler = this.listHander;
+			}
+			
+			else if (request.type == "list") {
+				yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
+				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="derek" AND list_id="' + request.timeline + '" AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+				responseHandler = this.tweetHander;
 			}
 			
 			else {
@@ -84,25 +93,29 @@ YUI.add('Twitter', function(Y) {
 		tweetHander : function(results, callback, context) {
 			var Tweets 		= [];
 			var rawTweets	= [];
-		
-			if (results.results) {
-				rawTweets = results.results;
-			}
-			else if (results["direct-messages"]) {
-				rawTweets = results["direct-messages"]["direct_message"];
-			}
-			else {
-				rawTweets = results.statuses.status;
-			}	
+			
+			try {
+				if (results.results) {
+					rawTweets = results.results;
+				}
+				else if (results["direct-messages"]) {
+					rawTweets = results["direct-messages"]["direct_message"];
+				}
+				else {
+					rawTweets = results.statuses.status;
+				}	
+			
+				if (!rawTweets.reverse) { // Test to see if it is an array
+					rawTweets = [rawTweets]; // No? Make it one.
+				}
 
-			if (!rawTweets.reverse) { // Test to see if it is an array
-				rawTweets = [rawTweets]; // No? Make it one.
-			}
-
-			for (var i in rawTweets) { 
-				Tweet = Object.create(Y.Tweet);
-				Tweet.init(rawTweets[i]);
-				Tweets.push(Tweet);
+				for (var i in rawTweets) { 
+					Tweet = Object.create(Y.Tweet);
+					Tweet.init(rawTweets[i]);
+					Tweets.push(Tweet);
+				}
+			} catch(error) {
+	
 			}
 				
 			callback(Tweets, context);
