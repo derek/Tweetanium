@@ -47,13 +47,13 @@ YUI.add('Twitter', function(Y) {
 			}
 			
 			else if (request.type == "lists") {
-				yql = 'SELECT * FROM twitter.lists WHERE user="derek" AND #oauth#;';
+				yql = 'SELECT * FROM twitter.lists WHERE user="' + _screen_name + '" AND #oauth#;';
 				responseHandler = this.listHander;
 			}
 			
 			else if (request.type == "list") {
 				yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
-				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="derek" AND list_id="' + request.timeline + '" AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="' + _screen_name + '" AND list_id="' + request.timeline + '" AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 				responseHandler = this.tweetHander;
 			}
 			
