@@ -74,8 +74,8 @@ YUI.add('Timeline', function(Y) {
 
 			Y.all(".tweet").each(function(tweet){
 				var id = tweet.get('id').replace("tweetid-", "");
-				if (id < tweet_id)
-				{
+				
+				if (parseInt(id) < tweet_id) {
 					tweet_id = id;
 				}
 			});
@@ -88,8 +88,8 @@ YUI.add('Timeline', function(Y) {
 
 			Y.all(".tweet").each(function(tweet){
 				var id = tweet.get('id').replace("tweetid-", "");
-				if (id > tweet_id)
-				{
+				
+				if (parseInt(id) > tweet_id) {
 					tweet_id = id;
 				}
 			});
