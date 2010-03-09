@@ -58,7 +58,7 @@ YUI.add('Tweet', function(Y) {
 
 				data.text = data.text.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi,'<a href="$1" target="_blank">$1<\/a>');
 				data.text = data.text.replace(/@([a-zA-Z0-9_]+)/gi,'<span class="pseudolink username">@$1<\/span>');
-				data.text = data.text.replace(/#([a-zA-Z0-9_]+)/gi,'<a class="query" href="#query=#$1">#$1<\/a>');
+				data.text = data.text.replace(/#([a-zA-Z0-9_]+)/gi,'<a class="query" href="#query=%23$1">#$1<\/a>');
 
 				html.push("<div class='tweet' id='tweetid-{id}'>");
 				html.push("		<div>");

@@ -71,6 +71,16 @@ YUI.add('Twitter', function(Y) {
 				http_method = "POST";
 			}
 			
+			else if (request.type == "trends") {
+				yql = 'select * from twitter.trends.current;';
+				responseHandler = this.trendsHandler;
+			}
+			
+			else if (request.type == "rate_limit_status") {
+				yql = 'select * from twitter.account.ratelimit;';
+				responseHandler = this.rateLimitHandler;
+			}
+			
 			else {
 				throw("Unknown request type");
 			}
@@ -109,6 +119,18 @@ YUI.add('Twitter', function(Y) {
 		
 		updateHandler : function(results, callback) {
 			callback(results.status);
+		},
+		
+		trendsHandler : function(results, callback) {
+			var timestamp = results.trends;
+			for (var i in timestamp) {
+				var trends = timestamp[i];
+				callback(trends);
+			}
+		},
+		
+		rateLimitHandler : function(results, callback) {
+			callback(results.hash);
 		},
 		
 		tweetHandler : function(results, callback, context) {

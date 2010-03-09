@@ -92,13 +92,6 @@ YUI({
 		}
 	}
 	
-	// Recalculate timestamps
-	setInterval(function() {
-		Y.all(".timestamp").each(function(node){
-			node.set("innerHTML", relative_time(node.getAttribute('title')));
-		})
-	}, 60000);
-	
 	// Load the initial state and loop to detect any URL Hash changes
 	setTimeout(newState, 100);
 	(function () {
@@ -112,8 +105,17 @@ YUI({
 				newState();
 		    }
 		}, 200);
-	})();
+	})();	
 	
+	
+	// Recalculate timestamps
+	setInterval(function() {
+		Y.all(".timestamp").each(function(node){
+			node.set("innerHTML", relative_time(node.getAttribute('title')));
+		})
+	}, 60000); // Once per minute
+
+
 	// Load in the user's lists
 	(function(){
 		var request = {};
@@ -127,18 +129,46 @@ YUI({
 			}
 			Y.one("#lists").set("innerHTML", html);
 		});
-	})();/**/
+	})();
+
+
+	// Check on the rate limiting
+	var checkRateLimitStatus = function(){
+		Y.Twitter.call({"type": "rate_limit_status"}, function(response){
+			var current_timestamp = Math.round(new Date().getTime() / 1000);
+			var seconds_till_reset = response['reset-time-in-seconds'].content - current_timestamp;
+			var minutes_till_reset = Math.round(seconds_till_reset / 60);
+			
+			Y.one("#rate-reset-time").set("innerHTML", minutes_till_reset );
+			Y.one("#rate-remaining-hits").set("innerHTML", response['remaining-hits'].content);
+		})
+	};
+	checkRateLimitStatus();
+	setInterval(checkRateLimitStatus, 75217); // Every 75 seconds, staggered
 	
+	
+	// reset the trends
+	var resetTrends = function () {
+		var request = {};
+		request.type = "trends";
+		Y.Twitter.call(request, function(trends){
+			var html = '';
+			for(var i in trends) {
+				html += "<li><a href='#query=" + encodeURIComponent(trends[i].query) + "'>" + trends[i].name + "</li>";
+			}
+			Y.one("#trends").set("innerHTML", html);
+		});
+	};
+	resetTrends();
+	setInterval(resetTrends, 60000 * 5); // Every 5 minutes
+
+
 	var recalculateStatusCharCount = function(){
 		var status = Y.one("#compose-status").get("value");
 		Y.one("#character-count").setContent(140-status.length);
 	}
-	
 	document.getElementById("compose-status").onkeyup = recalculateStatusCharCount;
 	
-	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
-	Y.on('click', updateStatusHandler, '#update-status');
-	Y.delegate('click', userHandler, '#timeline', '.username');
 	
 	function closeSideboxHandler() {
 		Y.one("#sidebox").addClass("hidden");
@@ -169,6 +199,10 @@ YUI({
 	function unlockUpdating() {
 		allowUpdate = true;
 	}
+	
+	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
+	Y.on('click', updateStatusHandler, '#update-status');
+	Y.delegate('click', userHandler, '#timeline', '.username');
 	
 	window.onscroll = function() {
 		/* <auto-update> */

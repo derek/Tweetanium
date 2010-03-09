@@ -92,11 +92,11 @@ else if (isset($_GET['logout']))
 					<ul id="lists"></ul>
 					<hr />
 					
-					<ul id="trending"></ul>
+					<ul id="trends"></ul>
 					<hr />
 					
 					<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
-					<div>Reset: <span id="rate-reset-time"></span></div>
+					<div>Resets in: <span id="rate-reset-time"></span> min.</div>
 					
 				</div>
 			</div>
