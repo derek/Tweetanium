@@ -111,7 +111,7 @@ YUI({
 				lastHash = location.hash;
 				newState();
 		    }
-		}, 500);
+		}, 200);
 	})();
 	
 	// Load in the user's lists
@@ -127,13 +127,29 @@ YUI({
 			}
 			Y.one("#lists").set("innerHTML", html);
 		});
-	})()
+	})();/**/
+	
+	var recalculateStatusCharCount = function(){
+		var status = Y.one("#compose-status").get("value");
+		Y.one("#character-count").setContent(140-status.length);
+	}
+	
+	document.getElementById("compose-status").onkeyup = recalculateStatusCharCount;
 	
 	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
+	Y.on('click', updateStatusHandler, '#update-status');
 	Y.delegate('click', userHandler, '#timeline', '.username');
 	
 	function closeSideboxHandler() {
 		Y.one("#sidebox").addClass("hidden");
+	}
+	
+	function updateStatusHandler() {
+		var status = Y.one("#compose-status").get("value");
+		Y.Twitter.call({"type":"update", "status":status}, function(response){
+			Y.one("#compose-status").set("value", "");
+			recalculateStatusCharCount();
+		});
 	}
 	
 	function userHandler(e){

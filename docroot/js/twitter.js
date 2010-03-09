@@ -6,20 +6,21 @@ YUI.add('Twitter', function(Y) {
 			var Tweets 	= [];
 			var yql 	= false;
 			var responseHandler = false;
+			var http_method = "GET";
 			
 			if (request.type == "timeline") {
 				switch(request.timeline) {
 					case "home":
-						yql = 'SELECT * FROM twitter.status.timeline.friends 	WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+						yql = 'SELECT * FROM twitter.status.timeline.friends 	WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					case "sent":
-						yql = 'SELECT * FROM twitter.status.timeline.user 		WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+						yql = 'SELECT * FROM twitter.status.timeline.user 		WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					case "mentions":
 						//yql = 'use "http://github.com/zachgraves/yql-tables/raw/master/twitter/twitter.status.mentions.xml" as twitter.status.mentions;';
-						yql = 'SELECT * FROM twitter.status.mentions	 		WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+						yql = 'SELECT * FROM twitter.status.mentions	 		WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					case "favorites":
@@ -27,23 +28,29 @@ YUI.add('Twitter', function(Y) {
 						break;
 
 					case "dmin":	
-						yql = 'SELECT * FROM twitter.directmessages 			WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+						yql = 'SELECT * FROM twitter.directmessages 			WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					case "dmout":	
-						yql = 'SELECT * FROM twitter.directmessages.sent 		WHERE ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+						yql = 'SELECT * FROM twitter.directmessages.sent 		WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					default:
 						throw("Invalid Twitter API method");
 						break;
 				}
-				responseHandler = this.tweetHander;
+				responseHandler = this.tweetHandler;
 			}
 			
 			else if (request.type == "search") {
-				yql = 'SELECT * FROM twitter.search WHERE ' + where.field + ' = ' + where.value + ' AND q="' + (request.timeline) + '";';
-				responseHandler = this.tweetHander;
+				if (where.value > 1) {
+					whereText = where.field + ' = ' + where.value + ' AND';
+				}
+				else {
+					whereText = '';
+				}
+				yql = 'SELECT * FROM twitter.search WHERE ' + whereText +' q="' + (request.timeline) + '";';
+				responseHandler = this.tweetHandler;
 			}
 			
 			else if (request.type == "lists") {
@@ -53,8 +60,15 @@ YUI.add('Twitter', function(Y) {
 			
 			else if (request.type == "list") {
 				yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
-				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="' + _screen_name + '" AND list_id="' + request.timeline + '" AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
-				responseHandler = this.tweetHander;
+				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="' + _screen_name + '" AND list_id="' + request.timeline + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+				responseHandler = this.tweetHandler;
+			}
+			
+			else if (request.type == "update") {
+				//status, in_reply_to_status_id, latitude, longitude
+				yql = 'INSERT INTO twitter.status (status, oauth_consumer_key, oauth_consumer_secret, oauth_token, oauth_token_secret) VALUES ("' + request.status + '", "#oauth_consumer_key#", "#oauth_consumer_secret#", "#oauth_token#", "#oauth_token_secret#");';
+				responseHandler = this.updateHandler;
+				http_method = "POST";
 			}
 			
 			else {
@@ -63,8 +77,11 @@ YUI.add('Twitter', function(Y) {
 			
 			if (yql) {
 				YQL(yql, {
+					method: http_method,
 					on: {
-						start: function(){ /* nothing */ },
+						start: function(){ 
+							console.log("YQL: " + yql);
+						},
 						complete: function(id, response, args){
 							var response = Y.JSON.parse(response.responseText);
 						
@@ -90,7 +107,11 @@ YUI.add('Twitter', function(Y) {
 			callback(results.lists_list.lists.list);
 		},
 		
-		tweetHander : function(results, callback, context) {
+		updateHandler : function(results, callback) {
+			callback(results.status);
+		},
+		
+		tweetHandler : function(results, callback, context) {
 			var Tweets 		= [];
 			var rawTweets	= [];
 			
@@ -125,7 +146,7 @@ YUI.add('Twitter', function(Y) {
 
 	// Helpers
 	function YQL(yql, params){
-		params.method 	= "GET";
+		params.method 	= params.method;
 		params.data 	= "yql=" + escape(yql);
 		Y.io("yql.php", params);
 	}

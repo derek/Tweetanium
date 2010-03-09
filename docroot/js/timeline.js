@@ -17,8 +17,7 @@ YUI.add('Timeline', function(Y) {
 
 			console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
-			Y.one("#timeline").get('children').remove(true);
-			Y.one("#timeline").append("<div class='inner'></div>");
+			Y.one("#timeline .inner").get('children').remove(true);
 
 			setTimeout(this.update, 0, this); // TODO: figure out why this works the way it does and the normal way doesn't
 

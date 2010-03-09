@@ -53,6 +53,17 @@ else if (isset($_GET['logout']))
 					<div class="yui-b">
 						<div class="yui-ge">
 							<div class="yui-u first" id="timeline">
+								<div style='border-bottom:solid #bfbfbf 2px'>
+									<img height="50" width="50" src="http://a3.twimg.com/profile_images/295683345/self1_normal.jpg">
+									<textarea id="compose-status" style="height:38px;width:517px;padding:5px 5px 5px 5px; float:Right;font-size:15px;"></textarea>
+									<div style="clear:both"></div>
+									<div style="float:right;">
+										<span id="character-count">140</span>
+										<input type="button" value="update" id="update-status" />
+									</div>
+									<div style="clear:both"></div>
+								</div>
+								<div style="clear:both"></div>
 								<div class="inner"></div>
 							</div>
 							<div class="yui-u hidden" id="sidebox">
@@ -82,19 +93,11 @@ else if (isset($_GET['logout']))
 					<hr />
 					
 					<ul id="trending"></ul>
-					
-					<!--
 					<hr />
-					<div>Next update: <span id="countdown"></span></div>
-					<div>Paused: <span class="pseudolink" id="link-pause">Off</span></div>
-					<div>Stopped: <span class="pseudolink" id="link-stop">Off</span></div>
-					<div>Update: <span class="pseudolink" id="link-refresh">Now</span></div>
 					
-					<hr />
-					<div class="bold">Rate Limiting</div>
 					<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
-					<div>Reset: <span  id="rate-reset-time"></span></div>
-					-->
+					<div>Reset: <span id="rate-reset-time"></span></div>
+					
 				</div>
 			</div>
 			

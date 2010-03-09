@@ -46,6 +46,9 @@ YUI.add('Tweet', function(Y) {
 				this.createdAgo = relative_time(this.createdAt);
 			}
 			
+			// pre-load the image
+			new Image(100,25).src=this.profileImage; 
+			
 		},
 		
 		asHtml: function() {
