@@ -54,7 +54,7 @@ else if (isset($_GET['logout']))
 						<div class="yui-ge">
 							<div class="yui-u first" id="timeline">
 								<div style='border-bottom:solid #bfbfbf 2px'>
-									<img height="50" width="50" src="http://a3.twimg.com/profile_images/295683345/self1_normal.jpg">
+									<img height="50" width="50" src="http://img.tweetimag.es/i/<?= $_SESSION['access_token']['screen_name'] ?>_n">
 									<textarea id="compose-status" style="height:38px;width:517px;padding:5px 5px 5px 5px; float:Right;font-size:15px;"></textarea>
 									<div style="clear:both"></div>
 									<div style="float:right;">
