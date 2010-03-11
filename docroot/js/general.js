@@ -62,29 +62,29 @@ YUI({
 			Timelines.splice(i, 1); // Splice, instead of delete, to not leave any holes in the array.
 		}
 		
-		if (state = getHashStringParameter('timeline')) {
+		if (timeline = getHashStringParameter('timeline')) {
 			config = {
-				type: 		"timeline",
-				timeline: 	state
+				type: "timeline",
+				timeline: timeline
 			};
 		} 
-		else if (state = getHashStringParameter('query')) {
+		else if (query = getHashStringParameter('query')) {
 			config = {
-				type: 		"search",
-				timeline: 	state
+				type: "search",
+				query: query
 			};
 		}
 		else if (list = getHashStringParameter('list')) {
 			config = {
-				type: 		"list",
-				timeline: 	list
+				type: "list",
+				list: list
 			};
 		}
 		else {
 			throw ("Unknown state");
 		}
 		
-		if (config.timeline) {
+		if (config.type) {
 			Timeline = Object.create(Y.Timeline);
 			Timeline.init(config);
 
@@ -302,7 +302,13 @@ function relative_time(parsed_date) {
 	}
 }
 
+function addslashes(str) {
+	return str.replace(/\\/g,'\\\\').replace(/\'/g,'\\\'').replace(/\"/g,'\\"').replace(/\0/g,'\\0');
+}
 
+function stripslashes(str) {
+	return str.replace(/\\'/g,'\'').replace(/\\"/g,'"').replace(/\\0/g,'\0').replace(/\\\\/g,'\\');
+}
 
 // To prevent the "Console is undefined" bug
 try { console.log('Console ready...'); } catch(e) { console = { log: function() {}}; }
