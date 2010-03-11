@@ -3,8 +3,7 @@ YUI.add('Twitter', function(Y) {
 	Y.Twitter = {
 		
 		call : function(request, callback, where, context) {
-			var Tweets 	= [];
-			var yql 	= false;
+			var yql = false;
 			var responseHandler = false;
 			var http_method = "GET";
 			
@@ -49,19 +48,19 @@ YUI.add('Twitter', function(Y) {
 				else {
 					whereText = '';
 				}
-				yql = 'SELECT * FROM twitter.search WHERE ' + whereText +' q="' + (request.timeline) + '";';
+				yql = "SELECT * FROM twitter.search WHERE " + whereText + " q='" + addslashes(request.query) + "'";
+				responseHandler = this.tweetHandler;
+			}
+			
+			else if (request.type == "list") {
+				yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
+				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="' + _screen_name + '" AND list_id="' + request.list + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 				responseHandler = this.tweetHandler;
 			}
 			
 			else if (request.type == "lists") {
 				yql = 'SELECT * FROM twitter.lists WHERE user="' + _screen_name + '" AND #oauth#;';
 				responseHandler = this.listHander;
-			}
-			
-			else if (request.type == "list") {
-				yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
-				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="' + _screen_name + '" AND list_id="' + request.timeline + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
-				responseHandler = this.tweetHandler;
 			}
 			
 			else if (request.type == "update") {
@@ -72,12 +71,12 @@ YUI.add('Twitter', function(Y) {
 			}
 			
 			else if (request.type == "trends") {
-				yql = 'select * from twitter.trends.current;';
+				yql = 'SELECT * FROM twitter.trends.current;';
 				responseHandler = this.trendsHandler;
 			}
 			
 			else if (request.type == "rate_limit_status") {
-				yql = 'select * from twitter.account.ratelimit;';
+				yql = 'SELECT * FROM twitter.account.ratelimit;';
 				responseHandler = this.rateLimitHandler;
 			}
 			
@@ -112,6 +111,10 @@ YUI.add('Twitter', function(Y) {
 				throw("No YQL defined");
 			}
 		},
+		
+		// ******
+		// Response Handlers
+		// 
 		
 		listHander : function(results, callback) {
 			callback(results.lists_list.lists.list);
@@ -166,7 +169,11 @@ YUI.add('Twitter', function(Y) {
 		
 	}; // End of Twitter
 
+
+	// *******
 	// Helpers
+	// 
+	
 	function YQL(yql, params){
 		params.method 	= params.method;
 		params.data 	= "yql=" + escape(yql);
