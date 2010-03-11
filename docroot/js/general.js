@@ -47,7 +47,7 @@ YUI({
 			supersedes: []
 		},
 	}
-}).use('node', 'dom', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function(Y) {
+}).use('node', 'dom', 'dd-constrain', 'dd-proxy', 'dd-drop', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function(Y) {
 	
 	function newState() {
 		var state 	 = null;
@@ -129,7 +129,7 @@ YUI({
 			}
 			Y.one("#lists").set("innerHTML", html);
 		});
-	});//();
+	})();
 
 	// Load in the user's saved searches
 	(function(){
@@ -142,7 +142,7 @@ YUI({
 			}
 			Y.one("#saved-searches").set("innerHTML", html);
 		});
-	});//();
+	})();
 
 
 	// Check on the rate limiting
@@ -156,7 +156,7 @@ YUI({
 			Y.one("#rate-remaining-hits").set("innerHTML", response['remaining-hits'].content);
 		})
 	};
-	checkRateLimitStatus();
+	setTimeout(checkRateLimitStatus, 2000);
 	setInterval(checkRateLimitStatus, 75217); // Every 75 seconds, staggered
 	
 	
@@ -172,7 +172,7 @@ YUI({
 			Y.one("#trends").set("innerHTML", html);
 		});
 	};
-	//resetTrends();
+	resetTrends();
 	setInterval(resetTrends, 60000 * 5); // Every 5 minutes
 
 
@@ -189,7 +189,7 @@ YUI({
 	
 	function updateStatusHandler() {
 		var status = Y.one("#compose-status").get("value");
-		Y.Twitter.call({"type":"update", "status":status}, function(response){
+		updateStatus(status, function(response){
 			Y.one("#compose-status").set("value", "");
 			recalculateStatusCharCount();
 		});
@@ -209,9 +209,48 @@ YUI({
 	}
 	
 	function searchHandler(e) {
-		//var query = Y.one("#search-box input[type=text]").get("value");
-		var query = getHashStringParameter('query');
+		var query = Y.one("#search-box input[type=text]").get("value");
 		window.location.hash = '#query="' + (query) + '"';
+	}
+	
+	function replyHandler(e) {
+		var username = Y.one(e.target).ancestor(".tweet").one(".username").get("innerHTML");
+		var in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
+		
+		var html = [];
+		html.push("<div>");
+		html.push("	 <input type='text' value='@" + username + " ' class='text-reply' id='reply-to-" + in_reply_to + "' style='width:400px;'>");
+		html.push("	 <input type='button' class='button-submit-reply' value='send'>");
+		html.push("	 <span class='pseudolink link-cancel-reply'>cancel</span>");
+		html.push("</div>");
+		html = html.join('');
+		
+		Y.one(e.target).ancestor(".tweet").one(".tweet-extra").set("innerHTML", html);
+	}
+	
+	function retweetHandler(e) {
+		var username = Y.one(e.target).ancestor(".tweet").one(".username").get("innerHTML");
+		var text = Y.one(e.target).ancestor(".tweet").one(".raw-text").get("innerHTML");
+		Y.one("#compose-status").set("value", "RT @" + username + ": " + text);
+		recalculateStatusCharCount();
+	}
+	
+	function cancelReplyHandler(e) {
+		Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
+	}
+	
+	function sendReplyHandler(e) {
+		var status = Y.one(e.target).ancestor(".tweet").one(".text-reply").get("value");
+		var in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
+		updateStatus(status, function(){
+			Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
+		})
+	} 
+	
+	function updateStatus(status, callback) {
+		Y.Twitter.call({"type":"update", "status":status}, function(response){
+			callback(response);
+		});		
 	}
 	
 	var allowUpdate = true;
@@ -221,9 +260,18 @@ YUI({
 	
 	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
 	Y.on('click', updateStatusHandler, '#update-status');
-	Y.delegate('click', userHandler, '#timeline', '.username');
-	Y.delegate('click', searchHandler, '#hd', '#search-box input[type=button]');
+	Y.on('click', searchHandler, '#search-box input[type=button]');
 	
+	Y.delegate('click', userHandler, '#timeline', '.username');
+	Y.delegate('click', replyHandler, '#timeline', '.link-reply');
+	Y.delegate('click', retweetHandler, '#timeline', '.link-retweet');
+	Y.delegate('click', cancelReplyHandler, '#timeline', '.link-cancel-reply');
+	Y.delegate('click', sendReplyHandler, '#timeline', '.button-submit-reply');
+
+
+
+
+
 	window.onscroll = function() {
 		/* <auto-update> */
 		    var st = (document.documentElement.scrollTop || document.body.scrollTop);
@@ -354,5 +402,24 @@ function stripslashes(str) {
 	return str.replace(/\\'/g,'\'').replace(/\\"/g,'"').replace(/\\0/g,'\0').replace(/\\\\/g,'\\');
 }
 
+function html_entity_decode(str)
+{
+    try
+	{
+		var temp = document.createElement('textarea');
+		temp.innerHTML = str; 
+		var val = temp.value;
+		//temp.parentNode.removeChild(temp);
+		return val;
+	}
+	catch(e)
+	{
+		//for IE add <div id="htmlconverter" style="display:none;"></div> to the page
+		document.getElementById("htmlconverter").innerHTML = '<textarea id="innerConverter">' + str + '</textarea>';
+		var content = document.getElementById("innerConverter").value;
+		document.getElementById("htmlconverter").innerHTML = "";
+		return content;
+	}
+}
 // To prevent the "Console is undefined" bug
 try { console.log('Console ready...'); } catch(e) { console = { log: function() {}}; }

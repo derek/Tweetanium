@@ -44,7 +44,9 @@ else if (isset($_GET['logout']))
 		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
 		<link rel="stylesheet" href="/css/main.css" type="text/css">
 		<style>
-
+			html {
+				background:url(<?= $_SESSION['twitter']['profile_background_image_url'] ?>) fixed no-repeat #<?= $_SESSION['twitter']['profile_background_color'] ?>;
+			}
 		</style>
 	</head>
 	<body>
@@ -65,8 +67,8 @@ else if (isset($_GET['logout']))
 					<div class="yui-b">
 						<div class="yui-ge">
 							<div class="yui-u first" id="timeline">
-								<div style='border-bottom:solid #bfbfbf 2px'>
-									<img height="50" width="50" src="http://img.tweetimag.es/i/<?= $_SESSION['access_token']['screen_name'] ?>_n">
+								<div style="margin:5px 0px 15px 0px;">
+									<img height="50" width="50" src="<?= $_SESSION['twitter']['profile_image_url'] ?>">
 									<textarea id="compose-status" style="height:38px;width:517px;padding:5px 5px 5px 5px; float:Right;font-size:15px;"></textarea>
 									<div style="clear:both"></div>
 									<div style="float:right;">
@@ -86,32 +88,43 @@ else if (isset($_GET['logout']))
 					</div>
 				</div>
 				<div class="yui-b">
-					<ul>
-						<? if (!isset($_SESSION['access_token'])) { ?>
-							<li><a href="?login">Login</a></li>
-						<? } else { ?>
-							<li><a href="#timeline=home">Home</a></li>
-							<li><a href="#timeline=mentions">Mentions</a></li>
-							<li><a href="#timeline=sent">Sent</a></li>
-							<li><a href="#timeline=favorites">Favorites</a></li>
-							<li><a href="#timeline=dmin">DM - Received</a></li>
-							<li><a href="#timeline=dmout">DM - Sent</a></li>
-							<li><a href="?logout">Logout</a></li>
-						<? } ?>
-					</ul>
-					<hr />
 					
-					<ul id="lists"></ul>
-					<hr />
+					<div class="module">
+						<h2>Timelines</h2>
+						<ul>
+							<? if (!isset($_SESSION['access_token'])) { ?>
+								<li><a href="?login">Login</a></li>
+							<? } else { ?>
+								<li><a href="#timeline=home">Home</a></li>
+								<li><a href="#timeline=mentions">Mentions</a></li>
+								<li><a href="#timeline=sent">Sent</a></li>
+								<li><a href="#timeline=favorites">Favorites</a></li>
+								<li><a href="#timeline=dmin">DM - Received</a></li>
+								<li><a href="#timeline=dmout">DM - Sent</a></li>
+								<li><a href="?logout">Logout</a></li>
+							<? } ?>
+						</ul>
+					</div>
 					
-					<ul id="trends"></ul>
-					<hr />
+					<div class="module">
+						<h2>Lists</h2>
+						<ul id="lists"></ul>
+					</div>
 					
-					<ul id="saved-searches"></ul>
-					<hr />
+					<div class="module">
+						<h2>Trends</h2>
+						<ul id="trends"></ul>
+					</div>
 					
-					<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
-					<div>Minutes till reset: <span id="rate-reset-time"></span></div>
+					<div class="module">
+						<h2>Saved Searches</h2>
+						<ul id="saved-searches"></ul>
+					</div>
+
+					<div class="module">
+						<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
+						<div>Minutes till reset: <span id="rate-reset-time"></span></div>
+					</div>
 					
 				</div>
 			</div>

@@ -52,15 +52,15 @@ YUI.add('Timeline', function(Y) {
 			//console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
 
 			switch(where) {
-				case "append" : 
+				case "append" :
 					Y.one("#timeline .inner").append(Bucket.asHtml());
 					break;
 
-				case "prepend" :	
+				case "prepend" :
 					Y.one("#timeline .inner").prepend(Bucket.asHtml());
 					break;
 
-				default : 
+				default :
 					throw("Whatchoo talkin' bout Willis?");
 					break;
 			}

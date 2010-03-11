@@ -20,6 +20,8 @@ $_SESSION['access_token'] = $access_token;
 unset($_SESSION['oauth_token']);
 unset($_SESSION['oauth_token_secret']);
 
+$_SESSION['twitter'] = $connection->get("http://twitter.com/account/verify_credentials.json", array(), "GET");
+
 //$connection->post("http://twitter.com/friendships/create/tweenky.xml", array(), "POST");
 
 /* If HTTP response is 200 continue otherwise send to connect page to retry */

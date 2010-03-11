@@ -22,16 +22,16 @@ YUI.add('Twitter', function(Y) {
 						yql = 'SELECT * FROM twitter.status.mentions	 		WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
-					case "favorites":
-						yql = 'SELECT * FROM twitter.favorites			 		WHERE id=' + _user_id + ' AND #oauth#;';
+					case "dmout":	
+						yql = 'SELECT * FROM twitter.directmessages.sent 		WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
 					case "dmin":	
 						yql = 'SELECT * FROM twitter.directmessages 			WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
 						break;
 
-					case "dmout":	
-						yql = 'SELECT * FROM twitter.directmessages.sent 		WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+					case "favorites":
+						yql = 'SELECT * FROM twitter.favorites			 		WHERE id=' + _user_id + ' AND #oauth#;';
 						break;
 
 					default:

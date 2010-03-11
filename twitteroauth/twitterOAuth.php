@@ -127,7 +127,7 @@ class TwitterOAuth {
   function get($url, $parameters = array()) {
     $response = $this->oAuthRequest($url, 'GET', $parameters);
     if ($this->format === 'json' && $this->decode_json) {
-      return json_decode($response);
+      return json_decode($response, true);
     }
     return $response;
   }
@@ -138,7 +138,7 @@ class TwitterOAuth {
   function post($url, $parameters = array()) {
     $response = $this->oAuthRequest($url, 'POST', $parameters);
     if ($this->format === 'json' && $this->decode_json) {
-      return json_decode($response);
+      return json_decode($response, true);
     }
     return $response;
   }
@@ -149,7 +149,7 @@ class TwitterOAuth {
   function delete($url, $parameters = array()) {
     $response = $this->oAuthRequest($url, 'DELETE', $parameters);
     if ($this->format === 'json' && $this->decode_json) {
-      return json_decode($response);
+      return json_decode($response, true);
     }
     return $response;
   }

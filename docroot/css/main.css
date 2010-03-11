@@ -9,8 +9,13 @@
 	display:none;
 }
 
+#bd {
+	padding:0px 6px 0px 6px;
+	background:white;
+}
+
 .tweet{
-	height:60px;
+	margin:5px 0px 0px 0px;
 }
 
 .hidden { 
@@ -41,6 +46,15 @@ a, .pseudolink {
 	color:blue;
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+.module {
+	border-bottom:solid 1px #DFDFDF;
+	padding:5px 0px 5px 0px;
+}
+
+.module h2 {
+	font-weight:bold;
 }
 
 #sidebox {
