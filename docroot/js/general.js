@@ -61,7 +61,6 @@ YUI({
 			Timelines[i].destroy();
 			Timelines.splice(i, 1); // Splice, instead of delete, to not leave any holes in the array.
 		}
-		
 		if (timeline = getHashStringParameter('timeline')) {
 			config = {
 				type: "timeline",
@@ -69,6 +68,7 @@ YUI({
 			};
 		} 
 		else if (query = getHashStringParameter('query')) {
+			//query = Y.one("#search-box input[type=text]").get("value");
 			config = {
 				type: "search",
 				query: query
@@ -129,7 +129,20 @@ YUI({
 			}
 			Y.one("#lists").set("innerHTML", html);
 		});
-	})();
+	});//();
+
+	// Load in the user's saved searches
+	(function(){
+		var request = {};
+		request.type = "saved_searches";
+		Y.Twitter.call(request, function(searches){
+			var html = '';
+			for(var i in searches) {
+				html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
+			}
+			Y.one("#saved-searches").set("innerHTML", html);
+		});
+	});//();
 
 
 	// Check on the rate limiting
@@ -159,7 +172,7 @@ YUI({
 			Y.one("#trends").set("innerHTML", html);
 		});
 	};
-	resetTrends();
+	//resetTrends();
 	setInterval(resetTrends, 60000 * 5); // Every 5 minutes
 
 
@@ -182,7 +195,7 @@ YUI({
 		});
 	}
 	
-	function userHandler(e){
+	function userHandler(e) {
 		var User = Object.create(Y.User);
 		var username = Y.one(e.target).get("innerHTML");
 		
@@ -195,6 +208,12 @@ YUI({
 		});
 	}
 	
+	function searchHandler(e) {
+		//var query = Y.one("#search-box input[type=text]").get("value");
+		var query = getHashStringParameter('query');
+		window.location.hash = '#query="' + (query) + '"';
+	}
+	
 	var allowUpdate = true;
 	function unlockUpdating() {
 		allowUpdate = true;
@@ -203,6 +222,7 @@ YUI({
 	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
 	Y.on('click', updateStatusHandler, '#update-status');
 	Y.delegate('click', userHandler, '#timeline', '.username');
+	Y.delegate('click', searchHandler, '#hd', '#search-box input[type=button]');
 	
 	window.onscroll = function() {
 		/* <auto-update> */
@@ -261,7 +281,7 @@ function getHashStringParameter(parameter){
 	var queryString = {};
 	var parameters  = window.location.hash.substring(1).split('&');
 	var pos, paramname, paramval;
-
+	
 	for (var i in parameters) {
 		pos = parameters[i].indexOf('=');
 		if (pos > 0) {
@@ -273,12 +293,36 @@ function getHashStringParameter(parameter){
 			queryString[parameters[i]] = "";
 		}
 	}
+	
 	if (queryString[parameter]) {
 		return queryString[parameter];
 	}
 	else {
 		return false;
 	}
+}
+function getHashStringParameter2(param)
+{
+	var queryString = {};
+	var parameters  = window.location.hash.substring(1).split('&');
+	var pos;
+	var paramname;
+	var paramval;
+	for (var i in parameters) 
+	{
+		pos = parameters[i].indexOf('=');
+		if (pos > 0)
+		{
+			paramname = parameters[i].substring(0,pos);
+			paramval  = parameters[i].substring(pos+1);
+			queryString[paramname] = unescape(paramval.replace(/\+/g,' '));
+		}
+		else
+		{
+			queryString[parameters[i]] = "";
+		}
+	}
+	return queryString[param];
 }
 
 function relative_time(parsed_date) {

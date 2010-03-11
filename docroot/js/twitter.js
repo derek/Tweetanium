@@ -75,6 +75,11 @@ YUI.add('Twitter', function(Y) {
 				responseHandler = this.trendsHandler;
 			}
 			
+			else if (request.type == "saved_searches") {
+				yql = 'SELECT * FROM twitter.search.saved WHERE #oauth#;';
+				responseHandler = this.savedSearchHandler;
+			}
+			
 			else if (request.type == "rate_limit_status") {
 				yql = 'SELECT * FROM twitter.account.ratelimit;';
 				responseHandler = this.rateLimitHandler;
@@ -122,6 +127,10 @@ YUI.add('Twitter', function(Y) {
 		
 		updateHandler : function(results, callback) {
 			callback(results.status);
+		},
+		
+		savedSearchHandler : function(results, callback) {
+			callback(results.saved_searches.saved_search);
 		},
 		
 		trendsHandler : function(results, callback) {

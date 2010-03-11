@@ -1,5 +1,5 @@
 #hd{
-	height:30px;
+	height:32px;
 	background-color:#dfdfdf;
 }
 
@@ -18,19 +18,19 @@
 }
 
 .tweet .tweet-image {
-float: left;
-width: 60px;
-height: 60px;
+	float: left;
+	width: 60px;
+	height: 60px;
 }
 
 .tweet .tweet-body {
-position:relative;
-left:5px;
-top:3px;
+	position:relative;
+	left:5px;
+	top:3px;
 }
 
 .tweet .tweet-footer {
-color:#999999;
+	color:#999999;
 }
 
 .bold{
@@ -38,12 +38,10 @@ color:#999999;
 }
 
 a, .pseudolink {
-color:blue;
-cursor: pointer;
-text-decoration: underline;
+	color:blue;
+	cursor: pointer;
+	text-decoration: underline;
 }
-
-
 
 #sidebox {
 	float:right;
@@ -56,4 +54,19 @@ text-decoration: underline;
 	overflow:hidden;
 }
 
+#search-box{
+	position:relative;
+	top:5px;
+	padding-right:5px;
+	float:right;
+}
+
+#search-box input[type=text]{
+	background:url("http://s89997654.onlinehome.us/screencaps//mv_fp_icons_sprite_1.1.png_%28PNG_Image%2C_136x350_pixels%29-20100310-202129.jpg") no-repeat white 5px;
+	width:180px;
+	padding: 1px 0px 1px 20px;
+	height:20px;
+	border:none;
+	font-weight:bold;
+}
 

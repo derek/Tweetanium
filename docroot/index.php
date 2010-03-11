@@ -43,11 +43,23 @@ else if (isset($_GET['logout']))
 		<title>Tweetanium</title>
 		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
 		<link rel="stylesheet" href="/css/main.css" type="text/css">
+		<style>
+
+		</style>
 	</head>
 	<body>
 		
 		<div id="doc4" class="yui-t1">
-			<div id="hd"><h1>Tweetanium</h1></div>
+			<div id="hd">
+				<div style="float:left;">
+					<h1></h1>
+				</div>
+				<div id="search-box">
+					<input type="text">
+					<input type="button" value="search">
+				</div>
+				<div style="clear:both"></div>
+			</div>
 			<div id="bd">
 				<div id="yui-main">
 					<div class="yui-b">
@@ -93,6 +105,9 @@ else if (isset($_GET['logout']))
 					<hr />
 					
 					<ul id="trends"></ul>
+					<hr />
+					
+					<ul id="saved-searches"></ul>
 					<hr />
 					
 					<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 

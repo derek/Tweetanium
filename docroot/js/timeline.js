@@ -15,7 +15,7 @@ YUI.add('Timeline', function(Y) {
 			this.timelineId = new Date().getTime();
 			this.config 	= config;
 
-			console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
+			//console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
 			Y.one("#timeline .inner").get('children').remove(true);
 
@@ -31,7 +31,7 @@ YUI.add('Timeline', function(Y) {
 		},
 
 		update: function(that) {
-			console.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
+			//console.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
 			var where = {
 				field : "since_id",
 				value : getTimeline(that.timelineId).highestTweetId(),
@@ -49,7 +49,7 @@ YUI.add('Timeline', function(Y) {
 			var Bucket = Object.create(Y.Bucket);
 			Bucket.init(this);
 			
-			console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
+			//console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
 
 			switch(where) {
 				case "append" : 
@@ -97,7 +97,7 @@ YUI.add('Timeline', function(Y) {
 		},
 		
 		destroy: function() {
-			console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} destroyed");
+		//	console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} destroyed");
 			clearInterval(this.timer);
 			this.active = false;
 		},

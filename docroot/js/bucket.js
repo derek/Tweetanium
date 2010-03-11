@@ -8,7 +8,7 @@ YUI.add('Bucket', function(Y) {
 		// Methods
 		init: function() {
 			this.bucketId = new Date().getTime();
-			console.log("Bucket {" + this.bucketId + "} created");
+			//console.log("Bucket {" + this.bucketId + "} created");
 			return this;
 		},
 		
