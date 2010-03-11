@@ -34,8 +34,19 @@
 	top:3px;
 }
 
-.tweet .tweet-footer {
-	color:#999999;
+.tweet .username {
+	font-weight:bold;
+}
+
+.tweet-footer,
+.tweet-footer a,
+.tweet-footer .pseudolink{
+	color:#C0C0C0;
+}
+
+.tweet-footer,
+.tweet-footer a{
+	text-decoration:none;
 }
 
 .bold{
@@ -43,7 +54,6 @@
 }
 
 a, .pseudolink {
-	color:blue;
 	cursor: pointer;
 	text-decoration: underline;
 }
@@ -55,6 +65,10 @@ a, .pseudolink {
 
 .module h2 {
 	font-weight:bold;
+}
+
+.bucket {
+	border-bottom:solid #bfbfbf 2px;
 }
 
 #sidebox {

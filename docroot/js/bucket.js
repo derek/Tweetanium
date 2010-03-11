@@ -15,7 +15,7 @@ YUI.add('Bucket', function(Y) {
 		asHtml: function() {
 			var html = [];
 
-			html.push(	"<div style='border-bottom:solid #bfbfbf 2px' id='bucketId-{bucketId}'>");
+			html.push(	"<div class='bucket' id='bucketId-{bucketId}'>");
 			html.push(	"	<div class='inner'>");
 			html.push(	"		<div align='center'><img src='http://www.tweenky.com/images/ajaxsm.gif'></div>");
 			html.push(	"	</div>");
@@ -34,9 +34,14 @@ YUI.add('Bucket', function(Y) {
 		
 		addTweets: function(Tweets) {
 			var html = [];
-
-			for(var i in Tweets) {
-				html.push(Tweets[i].asHtml());
+			
+			if (Tweets.length > 0) {
+				for(var i in Tweets) {
+					html.push(Tweets[i].asHtml());
+				}
+			} 
+			else if (Y.all(".bucket").size() == 1) {
+				html.push("<div align='center'>No tweets found</div>");
 			}
 
 			html = html.join('');

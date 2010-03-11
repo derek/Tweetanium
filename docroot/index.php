@@ -47,6 +47,10 @@ else if (isset($_GET['logout']))
 			html {
 				background:url(<?= $_SESSION['twitter']['profile_background_image_url'] ?>) fixed no-repeat #<?= $_SESSION['twitter']['profile_background_color'] ?>;
 			}
+			
+			a, .pseudolink {
+				color: #<?= $_SESSION['twitter']['profile_link_color'] ?>;
+			}
 		</style>
 	</head>
 	<body>
