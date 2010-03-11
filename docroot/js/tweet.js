@@ -66,7 +66,7 @@ YUI.add('Tweet', function(Y) {
 				html.push("		</div>");
 				html.push("		<div class='tweet-body'>");
 				html.push("			<span class='pseudolink username'>{userName}</span>: {text}");
-				html.push("		<div class='tweet-footer'><a href='http://twitter.com/{userName}/status/{id}' target='_blank'>{id}</a> - <span class='timestamp' title='{createdAt}'>{createdAgo}</span></div>");
+				html.push("		<div class='tweet-footer'><a href='http://twitter.com/{userName}/status/{id}' target='_blank' title='{createdAt}'>{createdAgo}</a></div>");
 				html.push("		</div>");
 				html.push("		<div style='clear:both'></div>");
 				html.push("</div>");
