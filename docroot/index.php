@@ -96,7 +96,7 @@ else if (isset($_GET['logout']))
 					<hr />
 					
 					<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
-					<div>Resets in: <span id="rate-reset-time"></span> min.</div>
+					<div>Minutes till reset: <span id="rate-reset-time"></span></div>
 					
 				</div>
 			</div>
