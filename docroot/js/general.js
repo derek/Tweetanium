@@ -111,7 +111,7 @@ YUI({
 	// Recalculate timestamps
 	setInterval(function() {
 		Y.all(".timestamp").each(function(node){
-			node.set("innerHTML", relative_time(node.getAttribute('title')));
+			node.setContent(relative_time(node.getAttribute('title')));
 		})
 	}, 60000); // Once per minute
 
@@ -127,7 +127,7 @@ YUI({
 				List.init(lists[i]);
 				html += List.asHtml();
 			}
-			Y.one("#lists").set("innerHTML", html);
+			Y.one("#lists").setContent(html);
 		});
 	})();
 
@@ -140,7 +140,7 @@ YUI({
 			for(var i in searches) {
 				html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
 			}
-			Y.one("#saved-searches").set("innerHTML", html);
+			Y.one("#saved-searches").setContent(html);
 		});
 	})();
 
@@ -152,8 +152,8 @@ YUI({
 			var seconds_till_reset = response['reset-time-in-seconds'].content - current_timestamp;
 			var minutes_till_reset = Math.round(seconds_till_reset / 60);
 			
-			Y.one("#rate-reset-time").set("innerHTML", minutes_till_reset );
-			Y.one("#rate-remaining-hits").set("innerHTML", response['remaining-hits'].content);
+			Y.one("#rate-reset-time").setContent(minutes_till_reset);
+			Y.one("#rate-remaining-hits").setContent(response['remaining-hits'].content);
 		})
 	};
 	setTimeout(checkRateLimitStatus, 2000);
@@ -169,7 +169,7 @@ YUI({
 			for(var i in trends) {
 				html += "<li><a href='#query=" + encodeURIComponent(trends[i].query) + "'>" + trends[i].name + "</li>";
 			}
-			Y.one("#trends").set("innerHTML", html);
+			Y.one("#trends").setContent(html);
 		});
 	};
 	resetTrends();
@@ -234,7 +234,7 @@ YUI({
 		html.push("</div>");
 		html = html.join('');
 		
-		Y.one(e.target).ancestor(".tweet").one(".tweet-extra").set("innerHTML", html);
+		Y.one(e.target).ancestor(".tweet").one(".tweet-extra").setContent(html);
 	}
 	
 	function retweetHandler(e) {
