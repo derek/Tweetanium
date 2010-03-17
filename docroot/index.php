@@ -39,6 +39,7 @@ else if (isset($_GET['logout']))
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd">
 <html>
+
 	<head>
 		<title>Tweetanium</title>
 		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
@@ -53,9 +54,11 @@ else if (isset($_GET['logout']))
 			}
 		</style>
 	</head>
+	
 	<body>
 		
 		<div id="doc4" class="yui-t1">
+			
 			<div id="hd">
 				<div style="float:left;">
 					<h1></h1>
@@ -66,6 +69,7 @@ else if (isset($_GET['logout']))
 				</div>
 				<div style="clear:both"></div>
 			</div>
+			
 			<div id="bd">
 				<div id="yui-main">
 					<div class="yui-b">
@@ -91,8 +95,8 @@ else if (isset($_GET['logout']))
 						</div>
 					</div>
 				</div>
+				
 				<div class="yui-b">
-					
 					<div class="module">
 						<h2>Timelines</h2>
 						<ul>
@@ -129,8 +133,8 @@ else if (isset($_GET['logout']))
 						<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
 						<div>Minutes till reset: <span id="rate-reset-time"></span></div>
 					</div>
-					
 				</div>
+				
 			</div>
 			
 			<div id="ft"><p>An @derek production</p></div>
@@ -146,8 +150,11 @@ else if (isset($_GET['logout']))
 			_user_id = '<?= $_SESSION['access_token']['user_id'] ?>';
 			_screen_name = '<?= $_SESSION['access_token']['screen_name'] ?>';
 		</script>
+		
 		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
 		<script type="text/javascript" src="/js/crock.js"></script>
 		<script type="text/javascript" src="/js/general.js"></script>
+		<script type="text/javascript" src="/js/yui_main.js"></script>
+		
 	</body>
 </html>
