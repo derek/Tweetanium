@@ -47,7 +47,7 @@ YUI({
 			supersedes: []
 		},
 	}
-}).use('node', 'dom', 'dd-constrain', 'dd-proxy', 'dd-drop', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function(Y) {
+}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function(Y) {
 	
 	function newState() {
 		var state 	 = null;
@@ -210,7 +210,16 @@ YUI({
 	
 	function searchHandler(e) {
 		var query = Y.one("#search-box input[type=text]").get("value");
-		window.location.hash = '#query="' + (query) + '"';
+		window.location.hash = '#query=' + (query) + '';
+	}
+	
+	function searchBoxHandler(e) {
+		if (e.type === "focus") {
+			e.target.set("value", "").setStyle("color", "#000000");
+		}
+		else if (e.type === "blur" && e.target.get("value") === "") {
+			e.target.set("value", "Twitter Search").setStyle("color", "#999999");
+		}
 	}
 	
 	function replyHandler(e) {
@@ -261,6 +270,8 @@ YUI({
 	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
 	Y.on('click', updateStatusHandler, '#update-status');
 	Y.on('click', searchHandler, '#search-box input[type=button]');
+	Y.on('focus', searchBoxHandler, '#search-box input[type=text]');
+	Y.on('blur', searchBoxHandler, '#search-box input[type=text]');
 	
 	Y.delegate('click', userHandler, '#timeline', '.username');
 	Y.delegate('click', replyHandler, '#timeline', '.link-reply');

@@ -61,7 +61,7 @@ else if (isset($_GET['logout']))
 					<h1></h1>
 				</div>
 				<div id="search-box">
-					<input type="text">
+					<input type="text" value="Twitter Search">
 					<input type="button" value="search">
 				</div>
 				<div style="clear:both"></div>
