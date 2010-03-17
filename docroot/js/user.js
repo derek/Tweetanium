@@ -1,8 +1,8 @@
 "use strict";
 
 /*global
-	YUI: true,
 	errorHandler: true,
+	YUI: true,
 */
 
 YUI.add('User', function (Y) {

@@ -4,8 +4,8 @@
 	addslashes: true,
 	errorHandler: true,
 	escape: true,
-	user_id: true,
 	screen_name: true,
+	user_id: true,
 	YQL: true,
 	YUI: true,
 */

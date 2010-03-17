@@ -1,10 +1,10 @@
 "use strict";
 
 /*global
-	YUI: true,
 	data: true,
-	relative_time: true,
 	html_entity_decode: true,
+	relative_time: true,
+	YUI: true,
 */
 
 YUI.add('Tweet', function (Y) {

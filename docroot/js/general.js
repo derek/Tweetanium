@@ -1,10 +1,9 @@
 "use strict";
 
 /*global 
-	window: true, 
-	YUI: true, 
 	unescape: true,
-	console: true
+	window: true,
+	YUI: true,
 */
 
 // Globals

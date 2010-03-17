@@ -1,14 +1,12 @@
 "use strict";
 
 /*global
-	window: true,
-	YUI: true,
 	getHashStringParameter: true,
 	relative_time: true,
 	updateStatus: true
+	window: true,
+	YUI: true,
 */
-
-
 
 YUI({
 	//combine: true,
@@ -40,6 +38,10 @@ YUI({
 		}
 	}
 }).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function (Y) {
+	
+	var allowUpdate;
+	
+	allowUpdate = true;
 	
 	function newState() {
 		var i, config, state, Timeline, timelineCount;
@@ -193,6 +195,13 @@ YUI({
 		Y.one("#sidebox").addClass("hidden");
 	}
 	
+	
+	function updateStatus(status, callback) {
+		Y.Twitter.call({type: "update", status: status}, function (response) {
+			callback(response);
+		});		
+	}
+	
 	function updateStatusHandler() {
 		var status;
 		
@@ -262,12 +271,6 @@ YUI({
 	function cancelReplyHandler(e) {
 		Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
 	}
-	
-	function updateStatus(status, callback) {
-		Y.Twitter.call({type: "update", status: status}, function (response) {
-			callback(response);
-		});		
-	}
 
 	function sendReplyHandler(e) {
 		var in_reply_to, status;
@@ -280,7 +283,6 @@ YUI({
 		});
 	}
 	
-	var allowUpdate = true;
 	function unlockUpdating() {
 		allowUpdate = true;
 	}
