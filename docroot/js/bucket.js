@@ -1,4 +1,10 @@
-YUI.add('Bucket', function(Y) {
+"use strict";
+
+/*globals
+	YUI: true,
+*/
+
+YUI.add('Bucket', function (Y) {
 
 	Y.Bucket = {
 		
@@ -6,49 +12,53 @@ YUI.add('Bucket', function(Y) {
 		bucketId: 0,
 	
 		// Methods
-		init: function() {
+		init: function () {
 			this.bucketId = new Date().getTime();
 			//console.log("Bucket {" + this.bucketId + "} created");
 			return this;
 		},
 		
-		asHtml: function() {
+		asHtml: function () {
 			var html = [];
 
-			html.push(	"<div class='bucket' id='bucketId-{bucketId}'>");
-			html.push(	"	<div class='inner'>");
-			html.push(	"		<div align='center'><img src='http://www.tweenky.com/images/ajaxsm.gif'></div>");
-			html.push(	"	</div>");
-			html.push(	"</div>");
+			html.push("<div class='bucket' id='bucketId-{bucketId}'>");
+			html.push("	<div class='inner'>");
+			html.push("  <div align='center'><img src='http://www.tweenky.com/images/ajaxsm.gif'></div>");
+			html.push("	</div>");
+			html.push("</div>");
 
 			return html.join('').supplant({
-				bucketId: this.bucketId,
+				bucketId: this.bucketId
 			});
 		},
 		
-		getTweets: function(request, where) {
-			Y.Twitter.call(request, function(Tweets, Bucket){
+		getTweets: function (request, where) {
+			Y.Twitter.call(request, function (Tweets, Bucket) {
 				Bucket.addTweets(Tweets);
 			}, where, this);
 		},
 		
-		addTweets: function(Tweets) {
-			var html = [];
+		addTweets: function (Tweets) {
+			var html, i; 
+			
+			html = [];
 			
 			if (Tweets.length > 0) {
-				for(var i in Tweets) {
-					html.push(Tweets[i].asHtml());
+				for (i in Tweets) {
+					if (Tweets.hasOwnProperty(i)) {
+						html.push(Tweets[i].asHtml());
+					}
 				}
-			} 
-			else if (Y.all(".bucket").size() == 1) {
+			}
+			else if (Y.all(".bucket").size() === 1) {
 				html.push("<div align='center'>No tweets found</div>");
 			}
 
 			html = html.join('');
 			
 			Y.one("#bucketId-" + this.bucketId + ' .inner').set("innerHTML", html);
-		},
+		}
 		
-	} // End of Bucket
+	}; // End of Bucket
 
 }, '0.0.1', { requires: ['node'] });

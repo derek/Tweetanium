@@ -1,5 +1,14 @@
-YUI.add('Timeline', function(Y) {
+"use strict";
 
+/*global
+	getTimeline: true,
+	Timelines: true,
+	window: true,
+	YUI: true,
+*/
+
+YUI.add('Timeline', function (Y) {
+	
 	Y.Timeline = {
 		
 		// Properties
@@ -9,11 +18,13 @@ YUI.add('Timeline', function(Y) {
 		interval: 62000,
 		
 		// Methods
-		init: function(config) {
-			if (!config) { throw new ("Missing config param"); }
+		init: function (config) {
+			if (!config) { 
+				throw new Error("Missing config param"); 
+			}
 			
 			this.timelineId = new Date().getTime();
-			this.config 	= config;
+			this.config = config;
 
 			//console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
@@ -26,55 +37,58 @@ YUI.add('Timeline', function(Y) {
 			return this;
 		},
 
-		beginTimer: function() {
+		beginTimer: function () {
 			this.timer = setInterval(this.update, this.interval, this);
 		},
 
-		update: function(that) {
+		update: function (that) {
 			//console.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
-			var where = {
+			that.addBucket("prepend").getTweets(that.config, {
 				field : "since_id",
-				value : getTimeline(that.timelineId).highestTweetId(),
-			};
-			that.addBucket("prepend").getTweets(that.config, where);
+				value : getTimeline(that.timelineId).highestTweetId()
+			});
 		},
 
-		addBucket: function(where) {
-			if (this.active === false)
-			{
-				throw("Sorry, timeline {" + this.alias + "} is dead");
-				return false;
+		addBucket: function (where) {
+			if (this.active === false) {
+				throw new Error("Sorry, timeline {" + this.alias + "} is dead");
 			}
+			else {
+				var Bucket;
+				
+				Bucket = Object.create(Y.Bucket);
+				Bucket.init(this);
 
-			var Bucket = Object.create(Y.Bucket);
-			Bucket.init(this);
-			
-			//console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
+				//console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
 
-			switch(where) {
-				case "append" :
+				switch (where) {
+					
+				case "append":
 					Y.one("#timeline .inner").append(Bucket.asHtml());
 					break;
 
-				case "prepend" :
+				case "prepend":
 					Y.one("#timeline .inner").prepend(Bucket.asHtml());
 					break;
 
 				default :
-					throw("Whatchoo talkin' bout Willis?");
-					break;
+					throw new Error("Whatchoo talkin' bout Willis?");
+					
+				}
+
+				return Bucket;
 			}
-
-			return Bucket;
 		},
 
-		lowestTweetId: function() {
-			var tweet_id = 9999999999999999;
+		lowestTweetId: function () {
+			var tweet_id;
+			
+			tweet_id = 9999999999999999;
 
-			Y.all(".tweet").each(function(tweet){
+			Y.all(".tweet").each(function (tweet) {
 				var id = tweet.get('id').replace("tweetid-", "");
 				
-				if (parseInt(id) < tweet_id) {
+				if (parseInt(id, 10) < tweet_id) {
 					tweet_id = id;
 				}
 			});
@@ -82,13 +96,17 @@ YUI.add('Timeline', function(Y) {
 			return tweet_id;
 		},
 		
-		highestTweetId: function() {
-			var tweet_id = 1;
+		highestTweetId: function () {
+			var tweet_id;
+			
+			tweet_id = 1;
 
-			Y.all(".tweet").each(function(tweet){
-				var id = tweet.get('id').replace("tweetid-", "");
+			Y.all(".tweet").each(function (tweet) {
+				var id;
 				
-				if (parseInt(id) > tweet_id) {
+				id = tweet.get('id').replace("tweetid-", "");
+				
+				if (parseInt(id, 10) > tweet_id) {
 					tweet_id = id;
 				}
 			});
@@ -96,22 +114,27 @@ YUI.add('Timeline', function(Y) {
 			return tweet_id;
 		},
 		
-		destroy: function() {
+		destroy: function () {
 		//	console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} destroyed");
 			clearInterval(this.timer);
 			this.active = false;
-		},
+		}
 		
 	}; // End of Timeline
 	
 	
+	// *******
 	// Helpers
-	
-	function getTimeline(timelineId){
-		var l = Timelines.length;
-		for(var i=0; i < l; i++) {
-			if (Timelines[i].timelineId == timelineId) {
-				return Timelines[i];
+	// 
+
+	function getTimeline(timelineId) {
+		var len, i;
+		
+		len = window.Timelines.length;
+		
+		for (i = 0; i < len; i = i + 1) {
+			if (window.Timelines[i].timelineId === timelineId) {
+				return window.Timelines[i];
 			}
 		}	
 	}

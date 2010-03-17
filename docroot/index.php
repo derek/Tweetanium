@@ -147,8 +147,8 @@ else if (isset($_GET['logout']))
 		</div>
 		
 		<script>
-			_user_id = '<?= $_SESSION['access_token']['user_id'] ?>';
-			_screen_name = '<?= $_SESSION['access_token']['screen_name'] ?>';
+			user_id = '<?= $_SESSION['access_token']['user_id'] ?>';
+			screen_name = '<?= $_SESSION['access_token']['screen_name'] ?>';
 		</script>
 		
 		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>

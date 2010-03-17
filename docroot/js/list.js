@@ -1,23 +1,34 @@
-YUI.add('List', function(Y) {
+"use strict";
+
+/*globals
+	YUI: true,
+*/
+
+YUI.add('List', function (Y) {
 
 	Y.List = {
-		init : function(data) {
+		init : function (data) {
 			this.data = data;
 		},
 		
-		asHtml: function() {
+		asHtml: function () {
+			var data;
+			
 			data = this.data;
-			return function(){
-				var html = [];
+			
+			return (function () {
+				var html;
+				
+				html = [];
 				
 				html.push("<li class='list'>");
-				html.push("		<div><a href='#list={id}'>{name}</a></div>");
+				html.push(" <div><a href='#list={id}'>{name}</a></div>");
 				html.push("</li>");
 
 				html = html.join('').supplant(data);
 
 				return html;
-			}();
+			}());
 		}
 	}; // End of List
 

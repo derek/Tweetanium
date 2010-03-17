@@ -1,4 +1,12 @@
+"use strict";
 
+/*global
+	window: true,
+	YUI: true,
+	getHashStringParameter: true,
+	relative_time: true,
+	updateStatus: true
+*/
 
 
 
@@ -10,7 +18,7 @@ YUI({
 		},
 		'gallery-yql': {
 			fullpath: 'http://yui.yahooapis.com/gallery-2010.01.27-20/build/gallery-yql/gallery-yql-min.js',
-			requires: ['get','event-custom'],
+			requires: ['get', 'event-custom'],
 			optional: [],
 			supersedes: []
 		},
@@ -31,17 +39,17 @@ YUI({
 			fullpath: 'http://tweetanium.net/js/user.js'
 		}
 	}
-}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function(Y) {
+}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function (Y) {
 	
 	function newState() {
-		var config, state, Timeline, timelineCount;
+		var i, config, state, Timeline, timelineCount;
 		
 		config = {};
 		state = null;
 		Timeline = {};
 		timelineCount = window.Timelines.length;
 		
-		for(var i=0; i < timelineCount; i++) {
+		for (i = 0; i < timelineCount; i = i + 1) {
 			window.Timelines[i].destroy();
 			window.Timelines.splice(i, 1); // Splice, instead of delete, to not leave any holes in the array.
 		}
@@ -72,37 +80,40 @@ YUI({
 	setTimeout(newState, 100);
 	(function () {
 		var lastHash = location.hash;
-		if (lastHash == '') {
+		if (lastHash === '') {
 			window.location.hash = "#timeline=home";
 		}
 		
-		return setInterval(function() {
-		    if(lastHash !== location.hash) {
+		return setInterval(function () {
+		    if (lastHash !== location.hash) {
 				lastHash = location.hash;
 				newState();
 		    }
 		}, 200);
-	})();	
+	}());	
 	
 	
 	// Recalculate timestamps
-	setInterval(function(Y) {
-		Y.all(".timestamp").each(function(node){
+	setInterval(function (Y) {
+		Y.all(".timestamp").each(function (node) {
 			node.setContent(relative_time(node.getAttribute('title')));
 		});
 	}, 60000, Y); // Once per minute
 
 
 	// Load in the user's lists
-	(function(){
-		var request = {};
+	(function () {
+		var request;
+		
+		request = {};
 		request.type = "lists";
-		Y.Twitter.call(request, function(lists){
-			var html, List;
+		
+		Y.Twitter.call(request, function (lists) {
+			var html, i, List;
 			
 			html = '';
 			
-			for(var i in lists) {
+			for (i in lists) {
 				if (lists.hasOwnProperty(i)) {
 					List = Object.create(Y.List);
 					List.init(lists[i]);
@@ -111,14 +122,16 @@ YUI({
 			}
 			Y.one("#lists").setContent(html);
 		});
-	})();
+	}());
 
 	// Load in the user's saved searches
-	(function(){
-		Y.Twitter.call({type: "saved_searches"}, function(searches){
-			var html = '';
+	(function () {
+		Y.Twitter.call({type: "saved_searches"}, function (searches) {
+			var i, html;
 			
-			for(var i in searches) {
+			html = '';
+			
+			for (i in searches) {
 				if (searches.hasOwnProperty(i)) {
 					html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
 			    }
@@ -126,33 +139,40 @@ YUI({
 			
 			Y.one("#saved-searches").setContent(html);
 		});
-	})();
+	}());
 
 
 	// Check on the rate limiting
-	function checkRateLimitStatus(){
-		Y.Twitter.call({type: "rate_limit_status"}, function(response){
-			var current_timestamp = Math.round(new Date().getTime() / 1000);
-			var seconds_till_reset = response['reset-time-in-seconds'].content - current_timestamp;
-			var minutes_till_reset = Math.round(seconds_till_reset / 60);
+	function checkRateLimitStatus() {
+		Y.Twitter.call({type: "rate_limit_status"}, function (response) {
+			var current_timestamp, minutes_till_reset, seconds_till_reset;
+			
+			current_timestamp = Math.round(new Date().getTime() / 1000);
+			seconds_till_reset = response['reset-time-in-seconds'].content - current_timestamp;
+			minutes_till_reset = Math.round(seconds_till_reset / 60);
 			
 			Y.one("#rate-reset-time").setContent(minutes_till_reset);
 			Y.one("#rate-remaining-hits").setContent(response['remaining-hits'].content);
 		});
 	}
+	
 	setTimeout(checkRateLimitStatus, 2000); // Delayed a bit after page load
 	setInterval(checkRateLimitStatus, 75123); // Every 75 seconds, staggered
 	
 	
 	// reset the trends
 	function resetTrends() {
-		Y.Twitter.call({type: "trends"}, function(trends){
-			var html = '';
-			for(var i in trends) {
+		Y.Twitter.call({type: "trends"}, function (trends) {
+			var html, i;
+			
+			html = '';
+			
+			for (i in trends) {
 				if (trends.hasOwnProperty(i)) {
 					html += "<li><a href='#query=" + encodeURIComponent(trends[i].query) + "'>" + trends[i].name + "</li>";
 			    }
 			}
+			
 			Y.one("#trends").setContent(html);
 		});
 	}
@@ -160,11 +180,11 @@ YUI({
 	setInterval(resetTrends, 60000 * 5); // Every 5 minutes
 
 
-	function recalculateStatusCharCount(){
+	function recalculateStatusCharCount() {
 		var status;
 		
 		status = Y.one("#compose-status").get("value");
-		Y.one("#character-count").setContent(140-status.length);
+		Y.one("#character-count").setContent(140 - status.length);
 	}
 	document.getElementById("compose-status").onkeyup = recalculateStatusCharCount;
 	
@@ -177,7 +197,8 @@ YUI({
 		var status;
 		
 		status = Y.one("#compose-status").get("value");
-		updateStatus(status, function(response){
+		
+		updateStatus(status, function (response) {
 			Y.one("#compose-status").set("value", "");
 			recalculateStatusCharCount();
 		});
@@ -192,7 +213,7 @@ YUI({
 		User = Object.create(Y.User);
 		User.init({username: Y.one(e.target).get("innerHTML")});
 
-		User.load(function(U){
+		User.load(function (U) {
 			Y.one("#sidebox .inner").setContent(U.asHtml());
 		});
 	}
@@ -243,7 +264,7 @@ YUI({
 	}
 	
 	function updateStatus(status, callback) {
-		Y.Twitter.call({"type":"update", "status":status}, function(response){
+		Y.Twitter.call({type: "update", status: status}, function (response) {
 			callback(response);
 		});		
 	}
@@ -254,7 +275,7 @@ YUI({
 		status = Y.one(e.target).ancestor(".tweet").one(".text-reply").get("value");
 		in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
 		
-		updateStatus(status, function(){
+		updateStatus(status, function () {
 			Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
 		});
 	}
@@ -264,12 +285,11 @@ YUI({
 		allowUpdate = true;
 	}
 	
-	
 	Y.on('click', closeSideboxHandler, '#link-close-sidebox');
 	Y.on('click', updateStatusHandler, '#update-status');
 	Y.on('click', searchHandler, '#search-box input[type=button]');
 	Y.on('focus', searchBoxHandler, '#search-box input[type=text]');
-	Y.on('blur', searchBoxHandler, '#search-box input[type=text]');
+	Y.on('blur',  searchBoxHandler, '#search-box input[type=text]');
 	
 	Y.delegate('click', userHandler, '#timeline', '.username');
 	Y.delegate('click', replyHandler, '#timeline', '.link-reply');
@@ -277,4 +297,44 @@ YUI({
 	Y.delegate('click', cancelReplyHandler, '#timeline', '.link-cancel-reply');
 	Y.delegate('click', sendReplyHandler, '#timeline', '.button-submit-reply');
 
+	window.onscroll = function () {
+		var st, wh, coverage, docHeight, t, where, offset;
+
+		/* <auto-update> */
+	    st = (document.documentElement.scrollTop || document.body.scrollTop);
+	    wh = (window.innerHeight && window.innerHeight < Y.DOM.winHeight()) ? window.innerHeight : Y.DOM.winHeight();
+
+		coverage = st + wh;
+		docHeight = Y.DOM.docHeight();
+
+		if (coverage >= (docHeight - 0) && allowUpdate) {
+			t = window.Timelines[0];
+			where = {
+				field : "max_id",
+				value : t.lowestTweetId() - 1
+			};
+			t.addBucket("append").getTweets(t.config, where);
+
+			allowUpdate = false;
+			setTimeout(unlockUpdating, 3000);
+		}
+		/* </auto-update> */
+
+		/* <sticky sidebox> */
+		offset = 30;
+		if (window.XMLHttpRequest) {
+			//Moving
+			if (document.documentElement.scrollTop > offset || window.pageYOffset > offset) {
+				document.getElementById('sidebox').style.position = 'fixed';
+				document.getElementById('sidebox').style.top = 0;
+			} 
+			// At top
+			else if (document.documentElement.scrollTop < offset || window.pageYOffset < offset) {
+				document.getElementById('sidebox').style.position = 'absolute';
+				document.getElementById('sidebox').style.top = offset + 'px';
+			}
+		}
+		/* </sticky sidebox> */
+	};
+	
 });

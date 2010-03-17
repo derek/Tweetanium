@@ -1,4 +1,11 @@
-YUI.add('User', function(Y) {
+"use strict";
+
+/*global
+	YUI: true,
+	errorHandler: true,
+*/
+
+YUI.add('User', function (Y) {
 
 	Y.User = {
 		
@@ -6,21 +13,23 @@ YUI.add('User', function(Y) {
 		username: null,
 
 		// Methods
-		init: function(info) {
+		init: function (info) {
 			this.username = info.username;
 			return this;
 		},
 		
-		load: function(callback) {
-			var User = this;
-			var url = "/proxy.php?url=" + "http://twitter.com/users/show.json";
+		load: function (callback) {
+			var User, url;
+			
+			User = this;
+			url = "/proxy.php?url=" + "http://twitter.com/users/show.json";
 			
 			Y.io(url, {
 				method: "GET",
 				data: "screen_name=" + this.username,
 				on: {
-					start: function(){ /* Nothing */ },
-					complete: function(id, response, args){
+					start: function () { /* Nothing */ },
+					complete: function (id, response, args) {
 						response = Y.JSON.parse(response.responseText);
 					    if (response.error) {
 							errorHandler(response.error);
@@ -29,18 +38,20 @@ YUI.add('User', function(Y) {
 							User.data = response;
 						}
 					},
-					end: function(){
+					end: function () {
 						callback(User);
-					},
+					}
 				}
 			});
 		},
 		
-		asHtml: function() {
-			var data = this.data;
-			data.status = data.status.text;
+		asHtml: function () {
+			var data;
 			
-			return function(){
+			data = this.data;
+			data.status = data.status.text; // Because the template doesn't support sub-properties
+			
+			return (function () {
 				var html = [];
 
 				html.push("<div><img src='http://img.tweetimag.es/i/{screen_name}_o' alt='{screen_name}' width='185' /></div>");
@@ -63,9 +74,9 @@ YUI.add('User', function(Y) {
 				html = html.join('').supplant(data);
 
 				return html;
-			}();
-		}		
+			}());
+		}
 		
-	} // End of Bucket
+	}; // End of Bucket
 
 }, '0.0.1', { requires: ['node'] });
