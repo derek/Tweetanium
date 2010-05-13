@@ -26,34 +26,36 @@ YUI.add('Twitter', function (Y) {
 				switch (request.timeline) {
 				
 				case "dmin":	
-					yql = 'SELECT * FROM twitter.directmessages WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+					yql = 'SELECT * FROM twitter.directmessages WHERE count=50 AND ' + where.field + ' = ' + where.value + '';
 					break;
 
 				case "dmout":	
-					yql = 'SELECT * FROM twitter.directmessages.sent WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+					yql = 'SELECT * FROM twitter.directmessages.sent WHERE count=50 AND ' + where.field + ' = ' + where.value + '';
 					break;
 				
 				case "favorites":
-					yql = 'SELECT * FROM twitter.favorites WHERE id=' + user_id + ' AND #oauth#;';
+					yql = 'SELECT * FROM twitter.favorites WHERE id=' + user_id + '';
 					break;
 
 				case "home":
-					yql = 'SELECT * FROM twitter.status.timeline.friends WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+					yql = 'SELECT * FROM twitter.status.timeline.friends WHERE count=50 AND ' + where.field + ' = ' + where.value + '';
 					break;
 					
 				case "mentions":
 					//yql = 'use "http://github.com/zachgraves/yql-tables/raw/master/twitter/twitter.status.mentions.xml" as twitter.status.mentions;';
-					yql = 'SELECT * FROM twitter.status.mentions WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+					yql = 'SELECT * FROM twitter.status.mentions WHERE count=50 AND ' + where.field + ' = ' + where.value + '';
 					break;
 
 				case "sent":
-					yql = 'SELECT * FROM twitter.status.timeline.user WHERE count=50 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+					yql = 'SELECT * FROM twitter.status.timeline.user WHERE count=50 AND ' + where.field + ' = ' + where.value + '';
 					break;
 
 				default:
 					throw ("Invalid Twitter API method");
 						
 				}
+				
+				yql = yql + '  AND oauth_token = "' + oauth_token + '" AND oauth_token_secret = "' + oauth_token_secret + '";';
 				
 				responseHandler = this.tweetHandler;
 			}
@@ -70,19 +72,19 @@ YUI.add('Twitter', function (Y) {
 			}
 			
 			else if (request.type === "list") {
-				yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
-				yql += 'SELECT * FROM twitter.lists.statuses WHERE user="' + screen_name + '" AND list_id="' + request.list + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + ' AND #oauth#;';
+				//yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
+				yql = 'SELECT * FROM twitter.lists.statuses WHERE user="' + screen_name + '" AND list_id="' + request.list + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + ';';
 				responseHandler = this.tweetHandler;
 			}
 			
 			else if (request.type === "lists") {
-				yql = 'SELECT * FROM twitter.lists WHERE user="' + screen_name + '" AND #oauth#;';
+				yql = 'SELECT * FROM twitter.lists WHERE user="' + screen_name + '";';
 				responseHandler = this.listHander;
 			}
 			
 			else if (request.type === "update") {
 				//status, in_reply_to_status_id, latitude, longitude
-				yql = 'INSERT INTO twitter.status (status, oauth_consumer_key, oauth_consumer_secret, oauth_token, oauth_token_secret) VALUES ("' + request.status + '", "#oauth_consumer_key#", "#oauth_consumer_secret#", "#oauth_token#", "#oauth_token_secret#");';
+				yql = 'INSERT INTO twitter.status (status, oauth_consumer_key, oauth_consumer_secret, oauth_token, oauth_token_secret) VALUES ("' + request.status + '", @oauth_consumer_key#, @oauth_consumer_secret, @oauth_token, @oauth_token_secret);';
 				responseHandler = this.updateHandler;
 				httpMethod = "POST";
 			}
@@ -93,7 +95,7 @@ YUI.add('Twitter', function (Y) {
 			}
 			
 			else if (request.type === "saved_searches") {
-				yql = 'SELECT * FROM twitter.search.saved WHERE #oauth#;';
+				yql = 'SELECT * FROM twitter.search.saved;';
 				responseHandler = this.savedSearchHandler;
 			}
 			
@@ -107,27 +109,11 @@ YUI.add('Twitter', function (Y) {
 			}
 			
 			if (yql) {
-				YQL(yql, {
-					method: httpMethod,
-					on: {
-						start: function () { 
-							console.log("YQL: " + yql);
-						},
-						complete: function (id, response, args) {
-							response = Y.JSON.parse(response.responseText);
-						
-							if (response.error) {
-								errorHandler(response.error);
-							} 
-							else {
-								responseHandler(response.results, callback, context);
-							}
-								
-							return true;
-						},
-						end: function () { /* nothing */ }
-					}
-				});
+				console.log("Executing: " + yql);
+				//Or the callback approach
+				new Y.yql(yql, function(r) {
+					responseHandler(r.query, callback, context);
+				}, {env: "store://tweetanium.net/tweetanium01"});
 			}
 			else {
 				throw new Error("No YQL defined");
@@ -139,15 +125,15 @@ YUI.add('Twitter', function (Y) {
 		// 
 		
 		listHander : function (results, callback) {
-			callback(results.lists_list.lists.list);
+			callback(results.results.lists_list.lists.list);
 		},
 		
 		updateHandler : function (results, callback) {
-			callback(results.status);
+			callback(results.results.status);
 		},
 		
 		savedSearchHandler : function (results, callback) {
-			callback(results.saved_searches.saved_search);
+			callback(results.results.saved_searches.saved_search);
 		},
 		
 		trendsHandler : function (results, callback) {
@@ -164,7 +150,7 @@ YUI.add('Twitter', function (Y) {
 		},
 		
 		rateLimitHandler : function (results, callback) {
-			callback(results.hash);
+			callback(results.results.hash);
 		},
 		
 		tweetHandler : function (results, callback, context) {
@@ -172,25 +158,24 @@ YUI.add('Twitter', function (Y) {
 			
 			Tweets = [];
 			rawTweets = [];
-					
 			try {
-				if (results.results) {
-					rawTweets = results.results;
+				if (results.results.results) {
+					rawTweets = results.results.results;
 				}
 				else if (results["direct-messages"]) {
 					rawTweets = results["direct-messages"].direct_message;
 				}
 				else {
-					rawTweets = results.statuses.status;
+					rawTweets = results.results.statuses.status;
 				}	
 			
 				if (!rawTweets.reverse) { // Test to see if it is an array
 					rawTweets = [rawTweets]; // No? Make it one.
 				}
-
 				for (i in rawTweets) {
 					if (rawTweets.hasOwnProperty(i)) {
 						Tweet = Object.create(Y.Tweet);
+					//console.log(rawTweets[i]);
 						Tweet.init(rawTweets[i]);
 						Tweets.push(Tweet);
 					}
@@ -203,16 +188,5 @@ YUI.add('Twitter', function (Y) {
 		}
 		
 	}; // End of Twitter
-
-
-	// *******
-	// Helpers
-	// 
-	
-	function YQL(yql, params) {
-		params.method = params.method;
-		params.data = "yql=" + escape(yql);
-		Y.io("yql.php", params);
-	}
 
 }, '0.0.1', { requires: ['io-base'] });

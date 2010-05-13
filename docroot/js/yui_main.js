@@ -11,34 +11,37 @@
 YUI({
 	//combine: true,
 	modules: {
-		'Bucket': {
-			fullpath: 'http://tweetanium.net/js/bucket.js'
-		},
 		'gallery-yql': {
 			fullpath: 'http://yui.yahooapis.com/gallery-2010.01.27-20/build/gallery-yql/gallery-yql-min.js',
 			requires: ['get', 'event-custom'],
 			optional: [],
 			supersedes: []
 		},
+		'Bucket': {
+			fullpath: '/js/bucket.js'
+		},
 		'List': {
-			fullpath: 'http://tweetanium.net/js/list.js'
+			fullpath: '/js/list.js'
 		},
 		'Timeline': {
-			fullpath: 'http://tweetanium.net/js/timeline.js'
+			fullpath: '/js/timeline.js'
 		},
 		'Tweet': {
-			fullpath: 'http://tweetanium.net/js/tweet.js'
+			fullpath: '/js/tweet.js'
 		},
 		'Twitter': {
-			fullpath: 'http://tweetanium.net/js/twitter.js',
-			requires: ['io-base', 'gallery-yql', 'json']
+			fullpath: '/js/twitter.js',
+			requires: ['io-base', 'yql', 'json']
 		},
 		'User': {
-			fullpath: 'http://tweetanium.net/js/user.js'
+			fullpath: '/js/user.js'
+		},
+		'yql': {
+			fullpath: '/js/yql.js'
 		}
 	}
-}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', function (Y) {
-	
+}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List',  function (Y) {
+
 	var allowUpdate;
 	
 	allowUpdate = true;

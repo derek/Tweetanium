@@ -23,7 +23,7 @@ YUI.add('Bucket', function (Y) {
 
 			html.push("<div class='bucket' id='bucketId-{bucketId}'>");
 			html.push("	<div class='inner'>");
-			html.push("  <div align='center'><img src='http://www.tweenky.com/images/ajaxsm.gif'></div>");
+			html.push("  <div align='center'><img src='/images/ajaxsm.gif'></div>");
 			html.push("	</div>");
 			html.push("</div>");
 

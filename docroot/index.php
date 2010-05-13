@@ -120,13 +120,13 @@ else if (isset($_GET['logout']))
 					</div>
 					
 					<div class="module">
-						<h2>Trends</h2>
-						<ul id="trends"></ul>
-					</div>
-					
-					<div class="module">
 						<h2>Saved Searches</h2>
 						<ul id="saved-searches"></ul>
+					</div>
+
+					<div class="module">
+						<h2>Trends</h2>
+						<ul id="trends"></ul>
 					</div>
 
 					<div class="module">
@@ -145,10 +145,13 @@ else if (isset($_GET['logout']))
 			</div>
 			
 		</div>
-		
 		<script>
 			user_id = '<?= $_SESSION['access_token']['user_id'] ?>';
 			screen_name = '<?= $_SESSION['access_token']['screen_name'] ?>';
+			oauth_token = '<?= $_SESSION['access_token']['oauth_token'] ?>';
+			oauth_token_secret = '<?= $_SESSION['access_token']['oauth_token_secret'] ?>';
+			
+			
 		</script>
 		
 		<script type="text/javascript" src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
