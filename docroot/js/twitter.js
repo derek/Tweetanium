@@ -11,13 +11,11 @@
 */
 
 YUI.add('Twitter', function (Y) {
-
+	
 	Y.Twitter = {
 		
 		call : function (request, callback, where, context) {
-			var  httpMethod, oauth, responseHandler, whereText, yql;
-			
-			httpMethod = "GET";
+			var  oauth, responseHandler, whereText, yql;
 			responseHandler = false;
 			yql = false;
 			oauth = false;
@@ -78,7 +76,7 @@ YUI.add('Twitter', function (Y) {
 			
 			else if (request.type === "list") {
 				//yql = 'use "http://github.com/drgath/yql-tables/raw/master/twitter/twitter.lists.statuses.xml" as twitter.lists.statuses;';
-				yql = 'SELECT * FROM twitter.lists.statuses WHERE user="' + screen_name + '" AND list_id="' + request.list + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + '';
+				yql = 'SELECT * FROM twitter.lists.statuses WHERE user="' + screen_name + '" AND list_id="' + request.list + '" AND per_page=100 AND ' + where.field + ' = ' + where.value + ' AND #oauth#';
 				responseHandler = this.tweetHandler;
 			}
 			
@@ -88,10 +86,8 @@ YUI.add('Twitter', function (Y) {
 			}
 			
 			else if (request.type === "update") {
-				//status, in_reply_to_status_id, latitude, longitude
-				yql = 'INSERT INTO twitter.status (status, oauth_consumer_key, oauth_consumer_secret, oauth_token, oauth_token_secret) VALUES ("' + request.status + '", @oauth_consumer_key#, @oauth_consumer_secret, @oauth_token, @oauth_token_secret);';
+				yql = 'UPDATE twitter.status SET status = "' + addslashes(request.status) + '" WHERE #oauth#'
 				responseHandler = this.updateHandler;
-				httpMethod = "POST";
 			}
 			
 			else if (request.type === "trends") {
@@ -109,16 +105,24 @@ YUI.add('Twitter', function (Y) {
 				responseHandler = this.rateLimitHandler;
 			}
 			
+			else if (request.type === "request_token") {
+				//yql = 'select * from auth.oauth.request_token where oauth_callback="http://tweetanium.net/twitter_callback.php" and oauth_version="1.0" and oauth_signature_method="HMAC-SHA1" and get_request_token_url="https://twitter.com/oauth/request_token";';
+				yql = 'select * from twitter.oauth.requesttoken where oauth_callback="http://tweetanium.net/";';
+				responseHandler = this.requestTokenHandler;
+			}
+			
 			else {
 				throw ("Unknown request type");
 			}
 			
 			if (yql) {
+				//yql = yql.replace("#oauth#", ' oauth_token = "' + getQueryStringParameter('oauth_token') + '" AND oauth_token_secret = "' + getQueryStringParameter('oauth_verifier') + '"');
 				yql = yql.replace("#oauth#", ' oauth_token = "' + oauth_token + '" AND oauth_token_secret = "' + oauth_token_secret + '"');
 				//console.log("Executing: " + yql);
 				new Y.yql(yql, function(r) {
+				//	console.log(r);
 					responseHandler(r.query, callback, context);
-				}, {env: "store://tweetanium.net/tweetanium04"});
+				}, {env: "store://tweetanium.net/tweetanium06"});
 			}
 			else {
 				throw new Error("No YQL defined");
@@ -143,8 +147,7 @@ YUI.add('Twitter', function (Y) {
 		
 		trendsHandler : function (results, callback) {
 			var i, timestamp, trends;
-			
-			timestamp = results.trends;
+			timestamp = results.results.trends;
 			
 			for (i in timestamp) {
 				if (timestamp.hasOwnProperty(i)) {
@@ -155,7 +158,12 @@ YUI.add('Twitter', function (Y) {
 		},
 		
 		rateLimitHandler : function (results, callback) {
+		console.log(results);
 			callback(results.results.hash);
+		},
+		
+		requestTokenHandler : function (results, callback) {
+			callback(results.results.result);
 		},
 		
 		tweetHandler : function (results, callback, context) {

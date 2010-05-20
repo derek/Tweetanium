@@ -137,7 +137,7 @@ else if (isset($_GET['logout']))
 				
 			</div>
 			
-			<div id="ft"><p>An @derek production</p></div>
+			<div id="ft"><p>An <a href="#search=from:derek">@derek</a> production</p></div>
 			
 			<div id="sidebox" class="hidden">
 				<div id="link-close-sidebox" class="pseudolink" align="right">Close</div>

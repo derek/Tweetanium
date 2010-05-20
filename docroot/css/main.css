@@ -32,6 +32,8 @@
 	position:relative;
 	left:5px;
 	top:3px;
+	overflow:auto;
+	word-wrap: break-word;
 }
 
 .tweet .username {

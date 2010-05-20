@@ -25,7 +25,6 @@ YUI.add('Timeline', function (Y) {
 			
 			this.timelineId = new Date().getTime();
 			this.config = config;
-
 			//console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
 			Y.one("#timeline .inner").get('children').remove(true);

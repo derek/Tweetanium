@@ -69,10 +69,14 @@ YUI({
 		else if ((config.list = getHashStringParameter('list'))) {
 			config.type = "list";
 		}
+		/*else if ((config.login = getHashStringParameter('login'))) {
+			Y.Twitter.call({type: "request_token"}, function(token){
+				window.location = "https://twitter.com/oauth/authenticate?" + token;
+			})
+		}*/
 		else {
 			throw ("Unknown state");
 		}
-		
 		if (config.type) {
 			Timeline = Object.create(Y.Timeline);
 			Timeline.init(config);
@@ -251,7 +255,7 @@ YUI({
 		
 		html = [];
 		html.push("<div>");
-		html.push("	 <input type='text' value='@" + username + " ' class='text-reply' id='reply-to-" + in_reply_to + "' style='width:400px;'>");
+		html.push("	 <textarea class='text-reply' id='reply-to-" + in_reply_to + "' style='width:400px; height:50px;'>@" + username + " </textarea>");
 		html.push("	 <input type='button' class='button-submit-reply' value='send'>");
 		html.push("	 <span class='pseudolink link-cancel-reply'>cancel</span>");
 		html.push("</div>");
