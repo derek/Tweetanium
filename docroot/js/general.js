@@ -39,16 +39,17 @@ function getHashStringParameter(parameter) {
 	}
 }
 
-function getQueryStringParameter(key, default_)
+function getQueryStringParameter(key, queryString)
 {
-  if (default_==null) default_="";
-  key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
-  var qs = regex.exec(window.location.href);
-  if(qs == null)
-    return default_;
-  else
-    return qs[1];
+	//TODO: Cleanup
+	var queryString = queryString || window.location.href;
+	key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+	var qs = regex.exec(queryString);
+	if (qs)
+		return qs[1];
+	else
+		return false;
 }
 
 

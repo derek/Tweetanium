@@ -9,8 +9,13 @@
 */
 
 YUI({
+	gallery: 'gallery-2010.02.22-22',
+
 	//combine: true,
 	modules: {
+		'gallery-storage-lite': {
+			fullpath: 'http://yui.yahooapis.com/gallery-2010.02.22-22/build/gallery-storage-lite/gallery-storage-lite-min.js'
+		},
 		'gallery-yql': {
 			fullpath: 'http://yui.yahooapis.com/gallery-2010.01.27-20/build/gallery-yql/gallery-yql-min.js',
 			requires: ['get', 'event-custom'],
@@ -40,7 +45,24 @@ YUI({
 			fullpath: '/js/yql.js'
 		}
 	}
-}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List',  function (Y) {
+}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', 'gallery-storage-lite',  function (Y) {
+
+
+	if (getQueryStringParameter('oauth_token')) {
+		console.log("step 2");
+		Y.StorageLite.setItem('oauth_token', getQueryStringParameter('oauth_token'));
+		Y.StorageLite.setItem('oauth_verifier', getQueryStringParameter('oauth_verifier'));
+
+		Y.Twitter.call({type: "access_token"}, function(tokens){
+			console.log("step 3");
+			console.log(tokens);
+			Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
+			Y.StorageLite.setItem('oauth_token_secret', tokens.oauth_token_secret);
+		});
+	}
+
+
+
 
 	var allowUpdate;
 	
@@ -69,11 +91,17 @@ YUI({
 		else if ((config.list = getHashStringParameter('list'))) {
 			config.type = "list";
 		}
-		/*else if ((config.login = getHashStringParameter('login'))) {
-			Y.Twitter.call({type: "request_token"}, function(token){
-				window.location = "https://twitter.com/oauth/authenticate?" + token;
-			})
-		}*/
+		else if ((config.login = getHashStringParameter('login'))) {
+			Y.Twitter.call({type: "request_token"}, function(tokens){
+				console.log("step 1");
+				console.log(tokens);
+				Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
+				Y.StorageLite.setItem('oauth_token_secret', tokens.oauth_token_secret);
+				window.setTimeout(function() {
+					window.location = "https://twitter.com/oauth/authenticate?oauth_token=" + tokens.oauth_token + "&oauth_token_secret=" + tokens.oauth_token_secret;
+				}, 10);
+			});
+		}
 		else {
 			throw ("Unknown state");
 		}

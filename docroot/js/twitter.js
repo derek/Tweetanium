@@ -106,8 +106,12 @@ YUI.add('Twitter', function (Y) {
 			}
 			
 			else if (request.type === "request_token") {
-				//yql = 'select * from auth.oauth.request_token where oauth_callback="http://tweetanium.net/twitter_callback.php" and oauth_version="1.0" and oauth_signature_method="HMAC-SHA1" and get_request_token_url="https://twitter.com/oauth/request_token";';
-				yql = 'select * from twitter.oauth.requesttoken where oauth_callback="http://tweetanium.net/";';
+				yql = 'select * from twitter.oauth.requesttoken where oauth_callback="http://tweetanium.net/index.html";';
+				responseHandler = this.requestTokenHandler;
+			}
+					
+			else if (request.type === "access_token") {
+				yql = 'select * from twitter.oauth.accesstoken where oauth_verifier="' + Y.StorageLite.getItem('oauth_verifier') + '" and #oauth#;';
 				responseHandler = this.requestTokenHandler;
 			}
 			
@@ -117,10 +121,11 @@ YUI.add('Twitter', function (Y) {
 			
 			if (yql) {
 				//yql = yql.replace("#oauth#", ' oauth_token = "' + getQueryStringParameter('oauth_token') + '" AND oauth_token_secret = "' + getQueryStringParameter('oauth_verifier') + '"');
-				yql = yql.replace("#oauth#", ' oauth_token = "' + oauth_token + '" AND oauth_token_secret = "' + oauth_token_secret + '"');
-				//console.log("Executing: " + yql);
+				yql = yql.replace("#oauth#", ' oauth_token = "' + Y.StorageLite.getItem('oauth_token') + '" AND oauth_token_secret = "' + Y.StorageLite.getItem('oauth_token_secret') + '"');
+				
+				console.log("Executing: " + yql);
 				new Y.yql(yql, function(r) {
-				//	console.log(r);
+					console.log(r);
 					responseHandler(r.query, callback, context);
 				}, {env: "store://tweetanium.net/tweetanium06"});
 			}
@@ -163,7 +168,14 @@ YUI.add('Twitter', function (Y) {
 		},
 		
 		requestTokenHandler : function (results, callback) {
-			callback(results.results.result);
+			// TODO: cleanup
+			var r = results.results.result;
+			var parts = r.split("&");
+			var back = {};
+			back.oauth_token = parts[0].split("=")[1];
+			back.oauth_token_secret= parts[1].split("=")[1];
+			
+			callback(back);
 		},
 		
 		tweetHandler : function (results, callback, context) {
