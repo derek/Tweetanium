@@ -57,7 +57,7 @@ YUI({
 		Y.Twitter.call({type: "access_token"}, function(tokens){
 			Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
 			Y.StorageLite.setItem('oauth_token_secret', tokens.oauth_token_secret);
-			window.location = "/";
+			window.location = window.location.split("?")[0];
 		});
 	}
 	
