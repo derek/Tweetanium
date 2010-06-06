@@ -43,8 +43,7 @@ YUI.add('Timeline', function (Y) {
 		update: function (that) {
 			//console.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
 			that.addBucket("prepend").getTweets(that.config, {
-				field : "since_id",
-				value : getTimeline(that.timelineId).highestTweetId()
+				since_id : getTimeline(that.timelineId).highestTweetId()
 			});
 		},
 

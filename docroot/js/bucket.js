@@ -32,10 +32,10 @@ YUI.add('Bucket', function (Y) {
 			});
 		},
 		
-		getTweets: function (request, where) {
+		getTweets: function (request, params) {
 			Y.Twitter.call(request, function (Tweets, Bucket) {
 				Bucket.addTweets(Tweets);
-			}, where, this);
+			}, params, this);
 		},
 		
 		addTweets: function (Tweets) {

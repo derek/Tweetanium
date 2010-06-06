@@ -46,27 +46,30 @@ YUI({
 		}
 	}
 }).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', 'gallery-storage-lite',  function (Y) {
-
+	
+	var allowUpdate;
+	
+	allowUpdate = true;
 
 	if (getQueryStringParameter('oauth_token')) {
-		console.log("step 2");
 		Y.StorageLite.setItem('oauth_token', getQueryStringParameter('oauth_token'));
 		Y.StorageLite.setItem('oauth_verifier', getQueryStringParameter('oauth_verifier'));
 
 		Y.Twitter.call({type: "access_token"}, function(tokens){
-			console.log("step 3");
-			console.log(tokens);
 			Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
 			Y.StorageLite.setItem('oauth_token_secret', tokens.oauth_token_secret);
+			window.location = "/";
 		});
 	}
-
-
-
-
-	var allowUpdate;
 	
-	allowUpdate = true;
+	Y.Twitter.call({type: "credentials"}, function(user){
+		console.log(user);
+		Y.StorageLite.setItem('id', user.id);
+		Y.StorageLite.setItem('screen_name', user.screen_name);
+		document.body.style.background = "url(" + user.profile_background_image_url + ") fixed no-repeat #" + user.profile_background_color;
+		//document.a.style.color = "#" + user.profile_link_color;
+		Y.one("#profile_image_url").setAttribute('src', user.profile_image_url);
+	});
 	
 	function newState() {
 		var i, config, state, Timeline, timelineCount;
@@ -101,6 +104,10 @@ YUI({
 					window.location = "https://twitter.com/oauth/authenticate?oauth_token=" + tokens.oauth_token + "&oauth_token_secret=" + tokens.oauth_token_secret;
 				}, 10);
 			});
+		}
+		else if ((config.list = getHashStringParameter('logout'))) {
+			Y.StorageLite.clear();
+			window.location = "/";
 		}
 		else {
 			throw ("Unknown state");

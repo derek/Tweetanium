@@ -19,30 +19,14 @@ YUI.add('User', function (Y) {
 		},
 		
 		load: function (callback) {
-			var User, url;
+			var User;
 			
 			User = this;
-			url = "/proxy.php?url=" + "http://twitter.com/users/show.json";
 			
-			Y.io(url, {
-				method: "GET",
-				data: "screen_name=" + this.username,
-				on: {
-					start: function () { /* Nothing */ },
-					complete: function (id, response, args) {
-						response = Y.JSON.parse(response.responseText);
-					    if (response.error) {
-							errorHandler(response.error);
-						}
-						else {
-							User.data = response;
-						}
-					},
-					end: function () {
-						callback(User);
-					}
-				}
-			});
+			Y.Twitter.call({type: "profile"}, function(user){
+				User.data = user;
+				callback(User);
+			}, {username:User.username});
 		},
 		
 		asHtml: function () {
