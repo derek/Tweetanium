@@ -41,7 +41,7 @@ YUI({
 			fullpath: 'js/user.js'
 		},
 		'yql': {
-			fullpath: '/js/yql.js'
+			fullpath: 'js/yql.js'
 		}
 	}
 }).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', 'gallery-storage-lite',  function (Y) {
