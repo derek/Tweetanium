@@ -106,7 +106,7 @@ YUI({
 		}
 		else if ((config.list = getHashStringParameter('logout'))) {
 			Y.StorageLite.clear();
-			window.location = "/";
+			window.location = window.location.split("?")[0];
 		}
 		else {
 			throw ("Unknown state");
