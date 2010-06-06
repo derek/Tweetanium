@@ -10,8 +10,7 @@
 
 YUI({
 	gallery: 'gallery-2010.02.22-22',
-
-	//combine: true,
+	combine: true,
 	modules: {
 		'gallery-storage-lite': {
 			fullpath: 'http://yui.yahooapis.com/gallery-2010.02.22-22/build/gallery-storage-lite/gallery-storage-lite-min.js'
