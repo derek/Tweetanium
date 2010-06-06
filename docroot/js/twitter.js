@@ -108,7 +108,7 @@ YUI.add('Twitter', function (Y) {
 			}
 		
 			else if (request.type === "request_token") {
-				yql = 'select * from twitter.oauth.requesttoken where oauth_callback="' + window.location.href + '";';
+				yql = 'select * from twitter.oauth.requesttoken where oauth_callback="http://' + window.location.host + window.location.pathname + '";';
 				responseHandler = this.requestTokenHandler;
 			}
 					
