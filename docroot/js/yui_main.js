@@ -22,23 +22,23 @@ YUI({
 			supersedes: []
 		},
 		'Bucket': {
-			fullpath: '/js/bucket.js'
+			fullpath: 'js/bucket.js'
 		},
 		'List': {
-			fullpath: '/js/list.js'
+			fullpath: 'js/list.js'
 		},
 		'Timeline': {
-			fullpath: '/js/timeline.js'
+			fullpath: 'js/timeline.js'
 		},
 		'Tweet': {
-			fullpath: '/js/tweet.js'
+			fullpath: 'js/tweet.js'
 		},
 		'Twitter': {
-			fullpath: '/js/twitter.js',
+			fullpath: 'js/twitter.js',
 			requires: ['io-base', 'yql', 'json']
 		},
 		'User': {
-			fullpath: '/js/user.js'
+			fullpath: 'js/user.js'
 		},
 		'yql': {
 			fullpath: '/js/yql.js'
