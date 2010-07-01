@@ -18,6 +18,10 @@ YUI.add('Tweet', function (Y) {
 		createdAt: null,
 		createdAgo: null,
 		profileImage: null,
+		in_reply_to_screen_name: null,
+		in_reply_to_status_id: null,
+		in_reply_to_user_id: null,
+		in_reply_to_url: null,
 		
 		// Methods
 		init: function (data) {
@@ -38,7 +42,6 @@ YUI.add('Tweet', function (Y) {
 			
 			else if (data.user) { // Is a regular tweet
 				time_split = data.created_at.split(" ");
-				
 				this.createdAt  = Date.parse(time_split[1] + " " + time_split[2] + ", " + time_split[5] + " " + time_split[3]);
 				this.createdAgo = relative_time(this.createdAt);
 				this.id = data.id;
@@ -46,6 +49,10 @@ YUI.add('Tweet', function (Y) {
 				this.source = data.source;
 				this.text = data.text;
 				this.userName = data.user.screen_name;
+				this.in_reply_to_screen_name = data.in_reply_to_screen_name;
+				this.in_reply_to_status_id = data.in_reply_to_status_id;
+				this.in_reply_to_user_id = data.in_reply_to_user_id;
+				this.in_reply_to_url = "http://twitter.com/" + this.in_reply_to_screen_name + "/status/" + this.in_reply_to_status_id;
 			}
 
 			else { // Comes from search
@@ -88,6 +95,11 @@ YUI.add('Tweet', function (Y) {
 				html.push("  <div class='tweet-footer'>");
 				html.push("   <a href='http://twitter.com/{userName}/status/{id}' target='_blank' title='{createdAt}' class='timestamp'>{createdAgo}</a>");
 				html.push("   via {source}");
+				
+				if (data.in_reply_to_screen_name) {
+					html.push(" in reply to <a href='" + data.in_reply_to_url + "' target='_blank'>" + data.in_reply_to_screen_name + "</a>");
+				}
+				
 				html.push("   | <span class='pseudolink link-reply'>Reply</span>");
 				html.push("   | <span class='pseudolink link-retweet'>Retweet</span>");
 				html.push("  </div>");

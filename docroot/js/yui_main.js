@@ -49,9 +49,15 @@ YUI({
 	var allowUpdate;
 	
 	allowUpdate = true;
+	
 	if (getQueryStringParameter('oauth_token')) {
 		Y.StorageLite.setItem('oauth_token', getQueryStringParameter('oauth_token'));
 		Y.StorageLite.setItem('oauth_verifier', getQueryStringParameter('oauth_verifier'));
+		
+		Y.Twitter.config({
+			oauth_token: getQueryStringParameter('oauth_token'), 
+			oauth_token_secret: getQueryStringParameter('oauth_token_secret')
+		});
 
 		Y.Twitter.call({type: "access_token"}, function(tokens){
 			Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
@@ -59,15 +65,6 @@ YUI({
 			window.location = 'http://' + window.location.host + window.location.pathname;
 		});
 	}
-	
-	Y.Twitter.call({type: "credentials"}, function(user){
-		console.log(user);
-		Y.StorageLite.setItem('id', user.id);
-		Y.StorageLite.setItem('screen_name', user.screen_name);
-		document.body.style.background = "url(" + user.profile_background_image_url + ") fixed no-repeat #" + user.profile_background_color;
-		//document.a.style.color = "#" + user.profile_link_color;
-		Y.one("#profile_image_url").setAttribute('src', user.profile_image_url);
-	});
 	
 	function newState() {
 		var i, config, state, Timeline, timelineCount;
@@ -118,88 +115,130 @@ YUI({
 		}
 	}
 	
-	// Load the initial state and loop to detect any URL Hash changes
-	setTimeout(newState, 100);
-	(function () {
-		var lastHash = location.hash;
-		if (lastHash === '') {
-			window.location.hash = "#timeline=home";
-		}
+	function monitorHashChanges() {
 		
-		return setInterval(function () {
-		    if (lastHash !== location.hash) {
-				lastHash = location.hash;
-				newState();
-		    }
-		}, 200);
-	}());	
-	
-	
+		// Load the initial state and loop to detect any URL Hash changes
+		setTimeout(newState, 100);
+		(function () {
+			var lastHash = location.hash;
+			if (lastHash === '') {
+				window.location.hash = "#timeline=home";
+			}
+
+			return setInterval(function () {
+			    if (lastHash !== location.hash) {
+					lastHash = location.hash;
+					newState();
+			    }
+			}, 200);
+		}());
+	}	
+
+
 	// Recalculate timestamps
 	setInterval(function (Y) {
 		Y.all(".timestamp").each(function (node) {
 			node.setContent(relative_time(node.getAttribute('title')));
 		});
 	}, 60000, Y); // Once per minute
-
-
-	// Load in the user's lists
-	(function () {
-		var request;
-		
-		request = {};
-		request.type = "lists";
-		
-		Y.Twitter.call(request, function (lists) {
-			var html, i, List;
-			
-			html = '';
-			
-			for (i in lists) {
-				if (lists.hasOwnProperty(i)) {
-					List = Object.create(Y.List);
-					List.init(lists[i]);
-					html += List.asHtml();
-			    }
-			}
-			Y.one("#lists").setContent(html);
-		});
-	}());
-
-	// Load in the user's saved searches
-	(function () {
-		Y.Twitter.call({type: "saved_searches"}, function (searches) {
-			var i, html;
-			
-			html = '';
-			
-			for (i in searches) {
-				if (searches.hasOwnProperty(i)) {
-					html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
-			    }
-			}
-			
-			Y.one("#saved-searches").setContent(html);
-		});
-	}());
-
-
-	// Check on the rate limiting
-	function checkRateLimitStatus() {
-		Y.Twitter.call({type: "rate_limit_status"}, function (response) {
-			var current_timestamp, minutes_till_reset, seconds_till_reset;
-			
-			current_timestamp = Math.round(new Date().getTime() / 1000);
-			seconds_till_reset = response['reset-time-in-seconds'].content - current_timestamp;
-			minutes_till_reset = Math.round(seconds_till_reset / 60);
-			
-			Y.one("#rate-reset-time").setContent(minutes_till_reset);
-			Y.one("#rate-remaining-hits").setContent(response['remaining-hits'].content);
-		});
+	
+	
+	
+	function renderLoggedOutUI() {
+		monitorHashChanges();
+		Y.one("#sidenav-login").setStyle('display', 'block');
 	}
 	
-	setTimeout(checkRateLimitStatus, 2000); // Delayed a bit after page load
-	setInterval(checkRateLimitStatus, 75123); // Every 75 seconds, staggered
+	
+	function renderLoggedInUI() {
+		
+		monitorHashChanges();
+		// Load in the user's lists
+		(function () {
+			var request;
+
+			request = {};
+			request.type = "lists";
+
+			Y.Twitter.call(request, function (lists) {
+				var html, i, List;
+
+				html = '';
+
+				for (i in lists) {
+					if (lists.hasOwnProperty(i)) {
+						List = Object.create(Y.List);
+						List.init(lists[i]);
+						html += List.asHtml();
+				    }
+				}
+				Y.one("#lists").setContent(html);
+				Y.one("#sidenav-lists").setStyle('display', 'block');
+			});
+		}());
+
+		// Load in the user's saved searches
+		(function () {
+			Y.Twitter.call({type: "saved_searches"}, function (searches) {
+				var i, html;
+
+				html = '';
+
+				for (i in searches) {
+					if (searches.hasOwnProperty(i)) {
+						html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
+				    }
+				}
+
+				Y.one("#saved-searches").setContent(html);
+				Y.one("#sidenav-saved-searches").setStyle('display', 'block');
+			});
+		}());
+
+
+		// Check on the rate limiting
+		function checkRateLimitStatus() {
+			Y.Twitter.call({type: "rate_limit_status"}, function (response) {
+				var current_timestamp, minutes_till_reset, seconds_till_reset;
+
+				current_timestamp = Math.round(new Date().getTime() / 1000);
+				seconds_till_reset = response['reset-time-in-seconds'].content - current_timestamp;
+				minutes_till_reset = Math.round(seconds_till_reset / 60);
+
+				Y.one("#rate-reset-time").setContent(minutes_till_reset);
+				Y.one("#sidenav-rate-stats").setStyle('display', 'block');
+				Y.one("#rate-remaining-hits").setContent(response['remaining-hits'].content);
+			});
+		}
+
+		setTimeout(checkRateLimitStatus, 2000); // Delayed a bit after page load
+		setInterval(checkRateLimitStatus, 75123); // Every 75 seconds, staggered
+	}
+	
+	if(Y.StorageLite.getItem('oauth_token') != null) {
+		
+		Y.Twitter.config({
+			oauth_token: Y.StorageLite.getItem('oauth_token'), 
+			oauth_token_secret: Y.StorageLite.getItem('oauth_token_secret')
+		});
+		
+		Y.Twitter.call({type: "credentials"}, function(user){
+			Y.Twitter.config({
+				screen_name: user.screen_name, 
+				user_id: user.id
+			});
+			document.body.style.background = "url(" + user.profile_background_image_url + ") fixed no-repeat #" + user.profile_background_color;
+			//document.a.style.color = "#" + user.profile_link_color;
+			Y.one("#profile_image_url").setAttribute('src', user.profile_image_url);
+			Y.one("#sidenav-timelines").setStyle('display', 'block');
+			Y.one("#update-status-wrapper").setStyle('display', 'block');
+			renderLoggedInUI();
+		});
+		
+	}
+	else {
+		renderLoggedOutUI();
+	}
 	
 	
 	// reset the trends
@@ -216,6 +255,7 @@ YUI({
 			}
 			
 			Y.one("#trends").setContent(html);
+			Y.one("#sidenav-trends").setStyle('display', 'block');
 		});
 	}
 	resetTrends();
@@ -352,9 +392,9 @@ YUI({
 		if (coverage >= (docHeight - 0) && allowUpdate) {
 			t = window.Timelines[0];
 			where = {
-				field : "max_id",
-				value : t.lowestTweetId() - 1
+				max_id : t.lowestTweetId() - 1
 			};
+			
 			t.addBucket("append").getTweets(t.config, where);
 
 			allowUpdate = false;

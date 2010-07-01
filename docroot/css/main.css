@@ -51,6 +51,10 @@
 	text-decoration:none;
 }
 
+.tweet-extra{
+	margin:10px 0px 10px 0px;
+}
+
 .bold{
 	font-weight:bold;
 }
@@ -101,3 +105,7 @@ a, .pseudolink {
 	color:#999999;
 }
 
+#sidenav .module,
+#update-status-wrapper{
+	display:none;
+}
