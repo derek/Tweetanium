@@ -115,25 +115,15 @@ YUI({
 		}
 	}
 	
-	function monitorHashChanges() {
-		
-		// Load the initial state and loop to detect any URL Hash changes
-		setTimeout(newState, 100);
-		(function () {
-			var lastHash = location.hash;
-			if (lastHash === '') {
-				window.location.hash = "#timeline=home";
-			}
-
-			return setInterval(function () {
-			    if (lastHash !== location.hash) {
-					lastHash = location.hash;
-					newState();
-			    }
-			}, 200);
-		}());
-	}	
-
+	
+	window.onhashchange = newState;
+	
+	if (window.location.hash === '') {
+		window.location.hash = "#timeline=home";
+	}
+	else {
+		newState();
+	}
 
 	// Recalculate timestamps
 	setInterval(function (Y) {
@@ -145,14 +135,12 @@ YUI({
 	
 	
 	function renderLoggedOutUI() {
-		monitorHashChanges();
 		Y.one("#sidenav-login").setStyle('display', 'block');
 	}
 	
 	
 	function renderLoggedInUI() {
 		
-		monitorHashChanges();
 		// Load in the user's lists
 		(function () {
 			var request;
@@ -227,8 +215,10 @@ YUI({
 				screen_name: user.screen_name, 
 				user_id: user.id
 			});
-			document.body.style.background = "url(" + user.profile_background_image_url + ") fixed no-repeat #" + user.profile_background_color;
-			//document.a.style.color = "#" + user.profile_link_color;
+			
+			dynaCSS("body{ background: url(" + user.profile_background_image_url + ") fixed no-repeat #" + user.profile_background_color + "; } ");
+			dynaCSS("a, .pseudolink {color: #" + user.profile_link_color + "}");
+			
 			Y.one("#profile_image_url").setAttribute('src', user.profile_image_url);
 			Y.one("#sidenav-timelines").setStyle('display', 'block');
 			Y.one("#update-status-wrapper").setStyle('display', 'block');
@@ -348,21 +338,35 @@ YUI({
 		recalculateStatusCharCount();
 	}
 	
+	function favoriteHandler(e) {
+		var tweet_id;
+		
+		tweet_id = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", '');
+		
+		Y.Twitter.call({type: "favorite_create", tweet_id: tweet_id}, function (response) {
+			//callback(response);
+		});
+	}
+	
 	function cancelReplyHandler(e) {
 		Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
 	}
 
-	function sendReplyHandler(e) {
-		var in_reply_to, status;
-		
-		status = Y.one(e.target).ancestor(".tweet").one(".text-reply").get("value");
-		in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
-		
-		updateStatus(status, function () {
-			Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
-		});
-	}
-	
+  function sendReplyHandler(e) {
+    var in_reply_to, status;
+    
+    status = Y.one(e.target).ancestor(".tweet").one(".text-reply").get("value");
+    in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
+    
+    updateStatus(status, function () {
+      Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
+    });
+  }
+
+ function showBucketHandler(e) {
+    Y.one(e.target).ancestor(".bucket").get('children').toggleClass('hidden');
+  }
+  
 	function unlockUpdating() {
 		allowUpdate = true;
 	}
@@ -376,20 +380,22 @@ YUI({
 	Y.delegate('click', userHandler, '#timeline', '.username');
 	Y.delegate('click', replyHandler, '#timeline', '.link-reply');
 	Y.delegate('click', retweetHandler, '#timeline', '.link-retweet');
+	Y.delegate('click', favoriteHandler, '#timeline', '.link-favorite');
 	Y.delegate('click', cancelReplyHandler, '#timeline', '.link-cancel-reply');
 	Y.delegate('click', sendReplyHandler, '#timeline', '.button-submit-reply');
+	Y.delegate('click', showBucketHandler, '#timeline', '.link-show-bucket');
 
 	window.onscroll = function () {
 		var st, wh, coverage, docHeight, t, where, offset;
 
 		/* <auto-update> */
-	    st = (document.documentElement.scrollTop || document.body.scrollTop);
-	    wh = (window.innerHeight && window.innerHeight < Y.DOM.winHeight()) ? window.innerHeight : Y.DOM.winHeight();
+    st = (document.documentElement.scrollTop || document.body.scrollTop);
+    wh = (window.innerHeight && window.innerHeight < Y.DOM.winHeight()) ? window.innerHeight : Y.DOM.winHeight();
 
 		coverage = st + wh;
 		docHeight = Y.DOM.docHeight();
 
-		if (coverage >= (docHeight - 0) && allowUpdate) {
+		if (coverage >= (docHeight - 50) && allowUpdate) {
 			t = window.Timelines[0];
 			where = {
 				max_id : t.lowestTweetId() - 1
@@ -418,5 +424,19 @@ YUI({
 		}
 		/* </sticky sidebox> */
 	};
+	
+	function dynaCSS(styles) {
+		var ss1 = document.createElement('style');
+		ss1.setAttribute("type", "text/css");
+		if (ss1.styleSheet) {   // IE
+		    ss1.styleSheet.cssText = styles;
+		} else {                // the world
+		    var tt1 = document.createTextNode(styles);
+		    ss1.appendChild(tt1);
+		}
+		var hh1 = document.getElementsByTagName('head')[0];
+		hh1.appendChild(ss1);
+		
+	}
 	
 });

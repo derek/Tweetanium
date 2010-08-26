@@ -62,7 +62,7 @@ YUI.add('Timeline', function (Y) {
 				switch (where) {
 					
 				case "append":
-					Y.one("#timeline .inner").append(Bucket.asHtml());
+					Y.one("#timeline .inner").append(Bucket.asHtml(true));
 					break;
 
 				case "prepend":

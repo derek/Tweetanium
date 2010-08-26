@@ -32,7 +32,7 @@
 	position:relative;
 	left:5px;
 	top:3px;
-	overflow:auto;
+	overflow:hidden;
 	word-wrap: break-word;
 }
 
@@ -108,4 +108,8 @@ a, .pseudolink {
 #sidenav .module,
 #update-status-wrapper{
 	display:none;
+}
+
+.link-show-bucket {
+  text-align:center;
 }

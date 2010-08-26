@@ -10,6 +10,7 @@ YUI.add('Bucket', function (Y) {
 		
 		// Properties
 		bucketId: 0,
+		autoshow: false,
 	
 		// Methods
 		init: function () {
@@ -18,17 +19,32 @@ YUI.add('Bucket', function (Y) {
 			return this;
 		},
 		
-		asHtml: function () {
-			var html = [];
-
+		asHtml: function (autoshow) {
+			var autoshow = autoshow || false,
+			    html = [],
+			    hidden = false,
+			    viewport = Y.one("#timeline").get('viewportRegion');
+			    
+      // If the user is viewing down the page a bit, then hide this bucket for later viewing.
+      if (viewport.top > 150 && autoshow === false) {
+        hidden = "hidden";
+      }
+      
 			html.push("<div class='bucket' id='bucketId-{bucketId}'>");
-			html.push("	<div class='inner'>");
-			html.push("  <div align='center'><img src='images/ajaxsm.gif'></div>");
+			
+			if (hidden) {
+			  html.push("<div class='link-show-bucket'><span class='pseudolink'><span class='new-tweet-count'></span> new tweets</span></div>");
+			}
+			
+			html.push("	<div class='inner {hidden}'>");
+			html.push("   <div align='center'><img src='images/ajaxsm.gif'></div>");
 			html.push("	</div>");
+			
 			html.push("</div>");
 
 			return html.join('').supplant({
-				bucketId: this.bucketId
+				bucketId: this.bucketId,
+				hidden: hidden
 			});
 		},
 		
@@ -50,12 +66,19 @@ YUI.add('Bucket', function (Y) {
 					}
 				}
 			}
-			else if (Y.all(".bucket").size() === 1) {
-				html.push("<div align='center'>No tweets found</div>");
+			else{
+			  Y.one("#bucketId-" + this.bucketId + ' .link-show-bucket').remove();
+		    if (Y.all(".bucket").size() === 1) {
+			    html.push("<div align='center'>No tweets</div>");
+		    }
 			}
 
 			html = html.join('');
-			
+
+			if (Y.one("#bucketId-" + this.bucketId + ' .new-tweet-count')) {
+  			Y.one("#bucketId-" + this.bucketId + ' .new-tweet-count').set("innerHTML", Tweets.length); 
+			}
+
 			Y.one("#bucketId-" + this.bucketId + ' .inner').set("innerHTML", html);
 		}
 		

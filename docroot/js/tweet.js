@@ -102,6 +102,7 @@ YUI.add('Tweet', function (Y) {
 				
 				html.push("   | <span class='pseudolink link-reply'>Reply</span>");
 				html.push("   | <span class='pseudolink link-retweet'>Retweet</span>");
+			//	html.push("   | <span class='pseudolink link-favorite'>Favorite</span>");
 				html.push("  </div>");
 				html.push("  <div class='tweet-extra'></div>");
 				html.push(" </div>");

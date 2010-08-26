@@ -25,6 +25,7 @@ YUI.add('Twitter', function (Y) {
 			},
 			
 			call : function (request, callback, params, context) {
+				console.log(request);
 				// Define some vars
 				var  responseHandler, whereText, yql;
 
@@ -34,7 +35,7 @@ YUI.add('Twitter', function (Y) {
 				// Some more default values
 				responseHandler = false;
 				yql = false;
-
+				
 				// If the requested API call is a timeline
 				if (request.type === "timeline") {
 
@@ -146,6 +147,14 @@ YUI.add('Twitter', function (Y) {
 					yql = 'select * from twitter.users where id="' + params.username + '"';
 					responseHandler = this.profileHandler;
 				}
+				
+				else if (request.type === "favorite_create") {
+					
+					// Can't really do favorites at this point because INSERTS cannot access environment variables.  Need to create a custom table.
+					//yql = 'UPDATE twitter.favorites SET status = "' + addslashes(request.status) + '" WHERE #oauth#';
+					//yql = 'INSERT INTO twitter.favorites WHERE id="' + request.tweet_id + '" AND #oauth#';
+					//responseHandler = this.favoriteHandler;
+				}
 
 				else if (request.type === "credentials") {
 					yql = 'select * from twitter.account.credentials WHERE #oauth#';
@@ -172,7 +181,8 @@ YUI.add('Twitter', function (Y) {
 					params.env = "store://tweetanium.net/tweetanium06";
 					console.log("Executing: " + yql);
 					new Y.yql(yql, function (r) {
-						//console.log(r);
+						console.log("Reponse:");
+						console.log(r);
 						responseHandler(r.query, callback, context);
 					}, params);
 				}
@@ -194,6 +204,11 @@ YUI.add('Twitter', function (Y) {
 
 			updateHandler : function (results, callback) {
 				callback(results.results.status);
+			},
+
+			favoriteHandler : function (results, callback) {
+				console.log(results);
+				//callback(results.results.status);
 			},
 
 			savedSearchHandler : function (results, callback) {
