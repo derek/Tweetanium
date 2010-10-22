@@ -104,7 +104,8 @@ YUI.add('Twitter', function (Y) {
 				}
 
 				else if (request.type === "list") {
-					whereText = 'WHERE user="' + config.screen_name + '" AND list_id="' + request.list + '" AND per_page=100 ';
+					
+					whereText = 'WHERE user="' + request.list.split("/")[1] + '" AND list_id="' + request.list.split("/")[2] + '" AND per_page=100 ';
 					
 					// Specify the max or min tweet id
 					if (params.since_id) {
@@ -120,6 +121,11 @@ YUI.add('Twitter', function (Y) {
 
 				else if (request.type === "lists") {
 					yql = 'SELECT * FROM twitter.lists WHERE user="' + config.screen_name + '" AND #oauth#';
+					responseHandler = this.listHander;
+				}
+
+				else if (request.type === "list_subscriptions") {
+					yql = 'SELECT * FROM twitter.lists.subscriptions WHERE user="' + config.screen_name + '" AND #oauth#';
 					responseHandler = this.listHander;
 				}
 

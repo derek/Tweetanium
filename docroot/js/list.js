@@ -22,7 +22,7 @@ YUI.add('List', function (Y) {
 				html = [];
 				
 				html.push("<li class='list'>");
-				html.push(" <div><a href='#list={id}'>{name}</a></div>");
+				html.push(" <div><a href='#list={uri}'>{name}</a></div>");
 				html.push("</li>");
 
 				html = html.join('').supplant(data);

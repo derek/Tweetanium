@@ -83,7 +83,6 @@ YUI({
 			config.type = "timeline";
 		}
 		else if ((config.query = getHashStringParameter('query'))) {
-			//query = Y.one("#search-box input[type=text]").get("value");
 			config.type = "search";
 		}
 		else if ((config.list = getHashStringParameter('list'))) {
@@ -143,28 +142,40 @@ YUI({
 		
 		// Load in the user's lists
 		(function () {
-			var request;
-
-			request = {};
-			request.type = "lists";
-
-			Y.Twitter.call(request, function (lists) {
-				var html, i, List;
-
-				html = '';
-
-				for (i in lists) {
-					if (lists.hasOwnProperty(i)) {
-						List = Object.create(Y.List);
-						List.init(lists[i]);
-						html += List.asHtml();
-				    }
-				}
-				Y.one("#lists").setContent(html);
-				Y.one("#sidenav-lists").setStyle('display', 'block');
+			
+			Y.Twitter.call({type:"lists"}, function (lists) {
+				Y.Twitter.call({type:"list_subscriptions"}, function (subscriptions) {
+					var html='', i, List;
+					
+					// Merge the lists
+					lists = lists.concat(subscriptions);
+					
+					// Now sort them
+					lists.sort(function compare(a,b) {
+						if (a.name.toLowerCase() < b.name.toLowerCase()){
+							return -1;
+						}
+						if (a.name.toLowerCase() > b.name.toLowerCase()){
+							return 1;
+						}
+						return 0;
+					});
+					
+					for (i in lists) {
+						if (lists.hasOwnProperty(i)) {
+							List = Object.create(Y.List);
+							List.init(lists[i]);
+							html += List.asHtml();
+					    }
+					}
+					
+					Y.one("#lists").setContent(html);
+					
+					Y.one("#sidenav-lists").setStyle('display', 'block');
+				});
 			});
 		}());
-
+		
 		// Load in the user's saved searches
 		(function () {
 			Y.Twitter.call({type: "saved_searches"}, function (searches) {
