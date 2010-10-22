@@ -32,9 +32,11 @@ YUI.add('Bucket', function (Y) {
       
 			html.push("<div class='bucket' id='bucketId-{bucketId}'>");
 			
+			html.push("<div><span class='pseudolink link-show-bucket'>");
 			if (hidden) {
-			  html.push("<div class='link-show-bucket'><span class='pseudolink'><span class='new-tweet-count'></span> new tweets</span></div>");
+			  html.push("<span class='new-tweet-count'></span> new tweets</span>");
 			}
+  	  html.push("</span></div>");
 			
 			html.push("	<div class='inner {hidden}'>");
 			html.push("   <div align='center'><img src='images/ajaxsm.gif'></div>");

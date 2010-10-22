@@ -87,7 +87,7 @@ YUI.add('Tweet', function (Y) {
 
 				html.push("<div class='tweet' id='tweetid-{id}'>");
 				html.push(" <div>");
-				html.push("  <a class='tweet-image' href=''><img src='{profileImage}' height='50' width='50'></a>");
+				html.push("  <span class='tweet-image'><img src='{profileImage}' height='50' width='50'></span>");
 				html.push(" </div>");
 				html.push(" <div class='tweet-body'>");
 				html.push("  <span class='hidden raw-text'>{text}</span>");
