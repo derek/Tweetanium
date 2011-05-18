@@ -81,12 +81,12 @@ YUI.add('Timeline', function (Y) {
 		lowestTweetId: function () {
 			var tweet_id;
 			
-			tweet_id = 9999999999999999;
+			tweet_id = false;
 
 			Y.all(".tweet").each(function (tweet) {
 				var id = tweet.get('id').replace("tweetid-", "");
-				
-				if (parseInt(id, 10) < tweet_id) {
+				console.log(id);
+				if (!tweet_id || parseInt(id, 10) < tweet_id) {
 					tweet_id = id;
 				}
 			});
