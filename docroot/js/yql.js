@@ -1,131 +1,142 @@
 /*jslint predef: YUI */
-YUI.add('yql', function(Y) {
-    //Global storage for the callbacks
-    if (!YUI.yql) {
-        YUI.yql = {};
-    }
+YUI.add('myYQL', function(Y) {
+
+    "use strict";
+
     /**
      * This class adds a sugar class to allow access to YQL (http://developer.yahoo.com/yql/).
      * @module yql
      */     
     /**
+     * Utility Class used under the hood my the YQL class
+     * @class YQLRequest
+     * @constructor
+     * @param {String} sql The SQL statement to execute
+     * @param {Function/Object} callback The callback to execute after the query (Falls through to JSONP).
+     * @param {Object} params An object literal of extra parameters to pass along (optional).
+     * @param {Object} opts An object literal of configuration options (optional): proto (http|https), base (url)
+     */
+    var YQLRequest = function (sql, callback, params, opts) {
+        
+        if (!params) {
+            params = {};
+        }
+        params.q = sql;
+        //Allow format override.. JSON-P-X
+        if (!params.format) {
+            params.format = Y.YQLRequest.FORMAT;
+        }
+        if (!params.env) {
+            params.env = Y.YQLRequest.ENV;
+        }
+        
+        this._params = params;
+        this._opts = opts;
+        this._callback = callback;
+
+    };
+    
+    YQLRequest.prototype = {
+        /**
+        * @private
+        * @property _jsonp
+        * @description Reference to the JSONP instance used to make the queries
+        */
+        _jsonp: null,
+        /**
+        * @private
+        * @property _opts
+        * @description Holder for the opts argument
+        */
+        _opts: null,
+        /**
+        * @private
+        * @property _callback
+        * @description Holder for the callback argument
+        */
+        _callback: null,
+        /**
+        * @private
+        * @property _params
+        * @description Holder for the params argument
+        */
+        _params: null,
+        /**
+        * @method send
+        * @description The method that executes the YQL Request.
+        * @chainable
+        * @returns {YQLRequest}
+        */
+        send: function() {
+            var qs = [], url = ((this._opts && this._opts.proto) ? this._opts.proto : Y.YQLRequest.PROTO);
+
+            Y.each(this._params, function(v, k) {
+                qs.push(k + '=' + encodeURIComponent(v));
+            });
+
+            qs = qs.join('&');
+            
+            url += ((this._opts && this._opts.base) ? this._opts.base : Y.YQLRequest.BASE_URL) + qs;
+            
+            var o = (!Y.Lang.isFunction(this._callback)) ? this._callback : { on: { success: this._callback } };
+            if (o.allowCache !== false) {
+                o.allowCache = true;
+            }
+            Y.log('URL: ' + url, 'info', 'yql');
+            
+            if (!this._jsonp) {
+                this._jsonp = Y.jsonp(url, o);
+            } else {
+                this._jsonp.url = url;
+                if (o.on && o.on.success) {
+                    this._jsonp._config.on.success = o.on.success;
+                }
+                this._jsonp.send();
+            }
+            return this;
+        }
+    };
+
+    /**
+    * @static
+    * @property FORMAT
+    * @description Default format to use: json
+    */
+    YQLRequest.FORMAT = 'json';
+    /**
+    * @static
+    * @property PROTO
+    * @description Default protocol to use: http
+    */
+    YQLRequest.PROTO = 'http';
+    /**
+    * @static
+    * @property BASE_URL
+    * @description The base URL to query: query.yahooapis.com/v1/public/yql?
+    */
+    YQLRequest.BASE_URL = ':/'+'/query.yahooapis.com/v1/public/yql?';
+    /**
+    * @static
+    * @property ENV
+    * @description The environment file to load: http://datatables.org/alltables.env
+    */
+    YQLRequest.ENV = 'http:/'+'/datatables.org/alltables.env';
+    
+    Y.YQLRequest = YQLRequest;
+	
+    /**
      * This class adds a sugar class to allow access to YQL (http://developer.yahoo.com/yql/).
-     * @class yql
-     * @extends Event.Target
+     * @class YQL
      * @constructor
      * @param {String} sql The SQL statement to execute
      * @param {Function} callback The callback to execute after the query (optional).
      * @param {Object} params An object literal of extra parameters to pass along (optional).
-     * @param {Object} opts An object literal of extra options to pass along to the Get Utility (optional).
      */
-    var BASE_URL = 'https:/'+'/query.yahooapis.com/v1/public/yql?',
-    yql = function (sql, callback, params, opts) {
-        yql.superclass.constructor.apply(this);
-        this._query(sql, callback, params, opts);
+	Y.YQL = function(sql, callback, params, opts) {
+        return new Y.YQLRequest(sql, callback, params, opts).send();
     };
 
-    Y.extend(yql, Y.EventTarget, {
-        /**
-        * @private
-        * @property _cb
-        * @description The callback method
-        */ 
-        _cb: null,
-        /**
-        * @private
-        * @property _stamp
-        * @description The method name on the Global YUI object we use as the callback.
-        */ 
-        _stamp: null,
-        /**
-        * @private
-        * @method _receiver
-        * @description The global callback that get's called from Get.
-        * @param {Object} q The JSON object from YQL.
-        */
-        _receiver: function(q) {
-            if (q.query) {
-                this.fire('query', q.query);
-            }
-            if (q.error) {
-                this.fire('error', q.error);
-            }
-            if (this._cb) {
-                this._cb(q);
-            }
-            delete YUI.yql[this._stamp];
-        },
-        /**
-        * @private
-        * @method _query
-        * @description Builds the query and fire the Get call.
-        * @param {String} sql The SQL statement to execute
-        * @param {Function} callback The callback to execute after the query (optional).
-        * @param {Object} params An object literal of extra parameters to pass along (optional).
-        * @param {Object} opts An object literal of extra options to pass along to the Get Utility (optional).
-        * @return Self
-        */
-        _query: function(sql, callback, params, opts) {
-            var st = Y.stamp({}), qs = '', url;
-            //Must replace the dashes with underscrores
-            st = st.replace(/-/g, '_');
 
-            this._stamp = st;
-            
-            this._cb = callback;
 
-            YUI.yql[st] = Y.bind(this._receiver, this);
 
-            if (!params) {
-                params = {};
-            }
-            params.q = sql;
-            params.format = 'json';
-            params.callback = "YUI.yql." + st;
-            if (!params.env) {
-                params.env = 'http:/'+'/datatables.org/alltables.env';
-            }
-
-            Y.each(params, function(v, k) {
-                qs += k + '=' + encodeURIComponent(v) + '&';
-            });
-            
-            if (!opts) {
-                opts = {};
-            }
-            opts.autopurge = true;
-            opts.context = this;
-            opts.onTimeout = function(o){
-                this.fire('timeout', o);
-                if (this._cb) {
-                    this._cb(o);
-                    this._cb = null;
-                }
-            };
-
-            url = BASE_URL + qs;
-            Y.Get.script(url, opts);
-            return this;
-        }
-    });
-    /**
-    * @event query
-    * @description Fires when the Query returns.
-    * @type {Event.Custom}
-    */
-
-    /**
-    * @event error
-    * @description Fires when an error occurs.
-    * @type {Event.Custom}
-    */
-    
-    /**
-     * @event timeout
-     * @description Fires when the request has timed-out.
-     * @type {Event.Custom}
-     */
-	
-	Y.yql = yql;
-	
-}, '1.0', { requires: ['get', 'event-custom'], skinnable:false});
+}, '1.0', { requires: ['jsonp', 'jsonp-url'], skinnable:false});

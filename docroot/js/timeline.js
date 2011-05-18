@@ -1,5 +1,3 @@
-"use strict";
-
 /*global
 	getTimeline: true,
 	Timelines: true,
@@ -9,6 +7,8 @@
 
 YUI.add('Timeline', function (Y) {
 	
+    "use strict";
+
 	Y.Timeline = {
 		
 		// Properties
@@ -25,7 +25,7 @@ YUI.add('Timeline', function (Y) {
 			
 			this.timelineId = new Date().getTime();
 			this.config = config;
-			//console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
+			//Y.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} created");
 
 			Y.one("#timeline .inner").get('children').remove(true);
 
@@ -41,7 +41,7 @@ YUI.add('Timeline', function (Y) {
 		},
 
 		update: function (that) {
-			//console.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
+			//Y.log("Timeline {" + that.config.timeline + " - " + that.timelineId + "} updating...");
 			that.addBucket("prepend").getTweets(that.config, {
 				since_id : getTimeline(that.timelineId).highestTweetId()
 			});
@@ -57,7 +57,7 @@ YUI.add('Timeline', function (Y) {
 				Bucket = Object.create(Y.Bucket);
 				Bucket.init(this);
 
-				//console.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
+				//Y.log(where + "ing bucketId {" + Bucket.bucketId + "} to timeline {" + this.config.timeline + "}");
 
 				switch (where) {
 					
@@ -113,7 +113,7 @@ YUI.add('Timeline', function (Y) {
 		},
 		
 		destroy: function () {
-		//	console.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} destroyed");
+		//	Y.log("Timeline {" + this.config.timeline + " - " + this.timelineId + "} destroyed");
 			clearInterval(this.timer);
 			this.active = false;
 		}
@@ -137,4 +137,4 @@ YUI.add('Timeline', function (Y) {
 		}	
 	}
 	
-}, '0.0.1', { requires: ['node'] });
+}, '0.0.1', { requires: ['node', 'dom'] });

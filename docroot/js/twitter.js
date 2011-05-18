@@ -1,5 +1,3 @@
-"use strict";
-
 /*global
 	addslashes: true,
 	errorHandler: true,
@@ -11,6 +9,8 @@
 */
 
 YUI.add('Twitter', function (Y) {
+
+    "use strict";
 	
 	Y.Twitter = function() {
 		
@@ -25,7 +25,7 @@ YUI.add('Twitter', function (Y) {
 			},
 			
 			call : function (request, callback, params, context) {
-				console.log(request);
+				//Y.log(request);
 				// Define some vars
 				var  responseHandler, whereText, yql;
 
@@ -182,15 +182,15 @@ YUI.add('Twitter', function (Y) {
 				}
 
 				if (yql) {
-					//console.log(config);
+					//Y.log(config);
 					yql = yql.replace("#oauth#", ' oauth_token = "' + config.oauth_token + '" AND oauth_token_secret = "' + config.oauth_token_secret + '"');
 					params.env = "store://tweetanium.net/tweetanium06";
-					console.log("Executing: " + yql);
-					new Y.yql(yql, function (r) {
-						console.log("Reponse:");
-						console.log(r);
+					//Y.log("Executing: " + yql);
+					new Y.YQL(yql, function (r) {
+						Y.log("Reponse:");
+						Y.log(r);
 						responseHandler(r.query, callback, context);
-					}, params);
+					}, params, {proto: "https"}).send();
 				}
 				else {
 					throw new Error("No YQL defined");
@@ -213,7 +213,7 @@ YUI.add('Twitter', function (Y) {
 			},
 
 			favoriteHandler : function (results, callback) {
-				console.log(results);
+				Y.log(results);
 				//callback(results.results.status);
 			},
 
@@ -276,7 +276,7 @@ YUI.add('Twitter', function (Y) {
 					for (i in rawTweets) {
 						if (rawTweets.hasOwnProperty(i)) {
 							Tweet = Object.create(Y.Tweet);
-						//console.log(rawTweets[i]);
+						//Y.log(rawTweets[i]);
 							Tweet.init(rawTweets[i]);
 							Tweets.push(Tweet);
 						}
@@ -291,4 +291,4 @@ YUI.add('Twitter', function (Y) {
 		}; // End of closure
 	}(); // End of Twitter
 
-}, '0.0.1', { requires: ['io-base'] });
+}, '0.0.1', { requires: ['io-base', 'myYQL'] });

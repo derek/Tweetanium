@@ -1,10 +1,10 @@
-"use strict";
-
 /*globals
 	YUI: true,
 */
 
 YUI.add('List', function (Y) {
+
+    "use strict";
 
 	Y.List = {
 		init : function (data) {

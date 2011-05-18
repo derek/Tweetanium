@@ -1,5 +1,3 @@
-"use strict";
-
 /*global
 	getHashStringParameter: true,
 	relative_time: true,
@@ -9,18 +7,9 @@
 */
 
 YUI({
-	gallery: 'gallery-2010.02.22-22',
-	combine: true,
+	combine: false,
+	filter: "raw",
 	modules: {
-		'gallery-storage-lite': {
-			fullpath: 'http://yui.yahooapis.com/gallery-2010.02.22-22/build/gallery-storage-lite/gallery-storage-lite-min.js'
-		},
-		'gallery-yql': {
-			fullpath: 'http://yui.yahooapis.com/gallery-2010.01.27-20/build/gallery-yql/gallery-yql-min.js',
-			requires: ['get', 'event-custom'],
-			optional: [],
-			supersedes: []
-		},
 		'Bucket': {
 			fullpath: 'js/bucket.js'
 		},
@@ -34,17 +23,19 @@ YUI({
 			fullpath: 'js/tweet.js'
 		},
 		'Twitter': {
-			fullpath: 'js/twitter.js',
-			requires: ['io-base', 'yql', 'json']
+			fullpath: 'js/twitter.js'
 		},
-		'User': {
-			fullpath: 'js/user.js'
-		},
-		'yql': {
-			fullpath: 'js/yql.js'
-		}
+        'User': {
+            fullpath: 'js/user.js'
+        },
+        'myYQL': {
+            fullpath: 'js/yql.js',
+            requires: ['jsonp', 'jsonp-url']
+        }
 	}
-}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', 'gallery-storage-lite',  function (Y) {
+}).use('node', 'dom', 'event', 'Timeline', 'Bucket', 'Tweet', 'Twitter', 'User', 'List', 'gallery-storage-lite', 'myYQL',  function (Y) {
+
+    "use strict";
 	
 	var allowUpdate;
 	
@@ -62,7 +53,7 @@ YUI({
 		Y.Twitter.call({type: "access_token"}, function(tokens){
 			Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
 			Y.StorageLite.setItem('oauth_token_secret', tokens.oauth_token_secret);
-			window.location = 'http://' + window.location.host + window.location.pathname;
+			window.location = '//' + window.location.host + window.location.pathname;
 		});
 	}
 	
@@ -90,8 +81,8 @@ YUI({
 		}
 		else if ((config.login = getHashStringParameter('login'))) {
 			Y.Twitter.call({type: "request_token"}, function(tokens){
-				console.log("step 1");
-				console.log(tokens);
+				Y.log("step 1");
+				Y.log(tokens);
 				Y.StorageLite.setItem('oauth_token', tokens.oauth_token);
 				Y.StorageLite.setItem('oauth_token_secret', tokens.oauth_token_secret);
 				window.setTimeout(function() {
@@ -101,7 +92,7 @@ YUI({
 		}
 		else if ((config.list = getHashStringParameter('logout'))) {
 			Y.StorageLite.clear();
-			window.location = 'http://' + window.location.host + window.location.pathname;
+			window.location = '//' + window.location.host + window.location.pathname;
 		}
 		else {
 			throw ("Unknown state");

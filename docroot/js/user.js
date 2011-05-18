@@ -1,11 +1,11 @@
-"use strict";
-
 /*global
 	errorHandler: true,
 	YUI: true,
 */
 
 YUI.add('User', function (Y) {
+
+    "use strict";
 
 	Y.User = {
 		

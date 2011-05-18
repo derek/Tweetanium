@@ -1,5 +1,3 @@
-"use strict";
-
 /*global 
 	unescape: true,
 	window: true,
@@ -104,7 +102,7 @@ function html_entity_decode(str) {
 
 // To prevent the "Console is undefined" bug
 try { 
-	console.log('Console ready...'); 
+	Y.log('Console ready...'); 
 } 
 catch (e) { 
 	console = { 

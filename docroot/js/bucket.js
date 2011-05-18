@@ -1,10 +1,10 @@
-"use strict";
-
 /*globals
 	YUI: true,
 */
 
 YUI.add('Bucket', function (Y) {
+
+    "use strict";
 
 	Y.Bucket = {
 		
@@ -15,7 +15,7 @@ YUI.add('Bucket', function (Y) {
 		// Methods
 		init: function () {
 			this.bucketId = new Date().getTime();
-			//console.log("Bucket {" + this.bucketId + "} created");
+			//Y.log("Bucket {" + this.bucketId + "} created");
 			return this;
 		},
 		
@@ -86,4 +86,4 @@ YUI.add('Bucket', function (Y) {
 		
 	}; // End of Bucket
 
-}, '0.0.1', { requires: ['node'] });
+}, '0.0.1', { requires: ['node', 'dom'] });

@@ -1,5 +1,3 @@
-"use strict";
-
 /*global
 	data: true,
 	html_entity_decode: true,
@@ -9,6 +7,8 @@
 
 YUI.add('Tweet', function (Y) {
 	
+    "use strict";
+
 	Y.Tweet = {
 		
 		// Properties
@@ -117,4 +117,4 @@ YUI.add('Tweet', function (Y) {
 		
 	}; // End of Tweet
 	
-}, '0.0.1', { requires: ['node'] });
+}, '0.0.1', { requires: [] });
