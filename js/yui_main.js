@@ -9,22 +9,23 @@
 YUI({
 	combine: false,
 	filter: "raw",
+	debug: false,
 	modules: {
-		'Bucket': {
-			fullpath: 'js/bucket.js'
-		},
-		'List': {
-			fullpath: 'js/list.js'
-		},
-		'Timeline': {
-			fullpath: 'js/timeline.js'
-		},
-		'Tweet': {
-			fullpath: 'js/tweet.js'
-		},
-		'Twitter': {
-			fullpath: 'js/twitter.js'
-		},
+        'Bucket': {
+        	fullpath: 'js/bucket.js'
+        },
+        'List': {
+        	fullpath: 'js/list.js'
+        },
+        'Timeline': {
+        	fullpath: 'js/timeline.js'
+        },
+        'Tweet': {
+        	fullpath: 'js/tweet.js'
+        },
+        'Twitter': {
+        	fullpath: 'js/twitter.js'
+        },
         'User': {
             fullpath: 'js/user.js'
         },
@@ -130,60 +131,55 @@ YUI({
 	
 	
 	function renderLoggedInUI() {
-		
 		// Load in the user's lists
-		(function () {
-			
-			Y.Twitter.call({type:"lists"}, function (lists) {
-				Y.Twitter.call({type:"list_subscriptions"}, function (subscriptions) {
-					var html='', i, List;
-					
-					// Merge the lists
-					lists = lists.concat(subscriptions);
-					
-					// Now sort them
-					lists.sort(function compare(a,b) {
-						if (a.name.toLowerCase() < b.name.toLowerCase()){
-							return -1;
-						}
-						if (a.name.toLowerCase() > b.name.toLowerCase()){
-							return 1;
-						}
-						return 0;
-					});
-					
-					for (i in lists) {
-						if (lists.hasOwnProperty(i)) {
-							List = Object.create(Y.List);
-							List.init(lists[i]);
-							html += List.asHtml();
-					    }
+		Y.Twitter.call({type:"lists"}, function (lists) {
+			Y.Twitter.call({type:"list_subscriptions"}, function (subscriptions) {
+				var html='', i, List;
+				//Y.log(lists);
+				//Y.log(subscriptions);
+				// Merge the lists
+				lists = lists.concat(subscriptions);
+				
+				// Now sort them
+				lists.sort(function compare(a,b) {
+					if (a.name.toLowerCase() < b.name.toLowerCase()){
+						return -1;
 					}
-					
-					Y.one("#lists").setContent(html);
-					
-					Y.one("#sidenav-lists").setStyle('display', 'block');
+					if (a.name.toLowerCase() > b.name.toLowerCase()){
+						return 1;
+					}
+					return 0;
 				});
-			});
-		}());
-		
-		// Load in the user's saved searches
-		(function () {
-			Y.Twitter.call({type: "saved_searches"}, function (searches) {
-				var i, html;
-
-				html = '';
-
-				for (i in searches) {
-					if (searches.hasOwnProperty(i)) {
-						html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
+				
+				for (i in lists) {
+					if (lists.hasOwnProperty(i)) {
+						List = Object.create(Y.List);
+						List.init(lists[i]);
+						html += List.asHtml();
 				    }
 				}
-
-				Y.one("#saved-searches").setContent(html);
-				Y.one("#sidenav-saved-searches").setStyle('display', 'block');
+				
+				Y.one("#lists").setContent(html);
+				
+				Y.one("#sidenav-lists").setStyle('display', 'block');
 			});
-		}());
+		});
+		
+		// Load in the user's saved searches
+		Y.Twitter.call({type: "saved_searches"}, function (searches) {
+			var i, html;
+
+			html = '';
+
+			for (i in searches) {
+				if (searches.hasOwnProperty(i)) {
+					html += "<li><a href='#query=" + encodeURIComponent(searches[i].query) + "'>" + searches[i].name + "</li>";
+			    }
+			}
+
+			Y.one("#saved-searches").setContent(html);
+			Y.one("#sidenav-saved-searches").setStyle('display', 'block');
+		});
 
 
 		// Check on the rate limiting
@@ -206,12 +202,10 @@ YUI({
 	}
 	
 	if(Y.StorageLite.getItem('oauth_token') != null) {
-		
 		Y.Twitter.config({
 			oauth_token: Y.StorageLite.getItem('oauth_token'), 
 			oauth_token_secret: Y.StorageLite.getItem('oauth_token_secret')
 		});
-		
 		Y.Twitter.call({type: "credentials"}, function(user){
 			Y.Twitter.config({
 				screen_name: user.screen_name, 
@@ -354,20 +348,20 @@ YUI({
 		Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
 	}
 
-  function sendReplyHandler(e) {
-    var in_reply_to, status;
-    
-    status = Y.one(e.target).ancestor(".tweet").one(".text-reply").get("value");
-    in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
-    
-    updateStatus(status, function () {
-      Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
-    });
-  }
+    function sendReplyHandler(e) {
+        var in_reply_to, status;
 
- function showBucketHandler(e) {
-    Y.one(e.target).ancestor(".bucket").get('children').toggleClass('hidden');
-  }
+        status = Y.one(e.target).ancestor(".tweet").one(".text-reply").get("value");
+        in_reply_to = Y.one(e.target).ancestor(".tweet").get("id").replace("tweetid-", "");
+
+        updateStatus(status, function () {
+            Y.one(e.target).ancestor(".tweet-extra").get('children').remove(true);
+        });
+    }
+
+    function showBucketHandler(e) {
+        Y.one(e.target).ancestor(".bucket").get('children').toggleClass('hidden');
+    }
   
 	function unlockUpdating() {
 		allowUpdate = true;
@@ -391,8 +385,8 @@ YUI({
 		var st, wh, coverage, docHeight, t, where, offset;
 
 		/* <auto-update> */
-    st = (document.documentElement.scrollTop || document.body.scrollTop);
-    wh = (window.innerHeight && window.innerHeight < Y.DOM.winHeight()) ? window.innerHeight : Y.DOM.winHeight();
+        st = (document.documentElement.scrollTop || document.body.scrollTop);
+        wh = (window.innerHeight && window.innerHeight < Y.DOM.winHeight()) ? window.innerHeight : Y.DOM.winHeight();
 
 		coverage = st + wh;
 		docHeight = Y.DOM.docHeight();

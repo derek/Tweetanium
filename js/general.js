@@ -102,7 +102,7 @@ function html_entity_decode(str) {
 
 // To prevent the "Console is undefined" bug
 try { 
-	Y.log('Console ready...'); 
+	console.log('Console ready...'); 
 } 
 catch (e) { 
 	console = { 

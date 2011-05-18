@@ -9,7 +9,6 @@
 */
 
 YUI.add('Twitter', function (Y) {
-
     "use strict";
 	
 	Y.Twitter = function() {
@@ -25,7 +24,7 @@ YUI.add('Twitter', function (Y) {
 			},
 			
 			call : function (request, callback, params, context) {
-				//Y.log(request);
+			    
 				// Define some vars
 				var  responseHandler, whereText, yql;
 
@@ -104,7 +103,6 @@ YUI.add('Twitter', function (Y) {
 				}
 
 				else if (request.type === "list") {
-					
 					whereText = 'WHERE user="' + request.list.split("/")[1] + '" AND list_id="' + request.list.split("/")[2] + '" AND per_page=100 ';
 					
 					// Specify the max or min tweet id
@@ -125,6 +123,7 @@ YUI.add('Twitter', function (Y) {
 				}
 
 				else if (request.type === "list_subscriptions") {
+					//alert('a');
 					yql = 'SELECT * FROM twitter.lists.subscriptions WHERE user="' + config.screen_name + '" AND #oauth#';
 					responseHandler = this.listHander;
 				}
@@ -187,10 +186,10 @@ YUI.add('Twitter', function (Y) {
 					params.env = "store://tweetanium.net/tweetanium06";
 					//Y.log("Executing: " + yql);
 					new Y.YQL(yql, function (r) {
-						Y.log("Reponse:");
-						Y.log(r);
+						//Y.log("Reponse:");
+						//Y.log(r);
 						responseHandler(r.query, callback, context);
-					}, params, {proto: "https"}).send();
+					}, params, {proto: "https"});
 				}
 				else {
 					throw new Error("No YQL defined");
@@ -213,8 +212,8 @@ YUI.add('Twitter', function (Y) {
 			},
 
 			favoriteHandler : function (results, callback) {
-				Y.log(results);
-				//callback(results.results.status);
+				//Y.log(results);
+				callback(results.results.status);
 			},
 
 			savedSearchHandler : function (results, callback) {
@@ -223,6 +222,7 @@ YUI.add('Twitter', function (Y) {
 
 			trendsHandler : function (results, callback) {
 				var i, timestamp, trends;
+				return false;
 				timestamp = results.results.trends;
 
 				for (i in timestamp) {
