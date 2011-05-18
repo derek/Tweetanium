@@ -1,1 +1,123 @@
-My GitHub Page
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+	<head>
+		<title>Tweetanium</title>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
+		<link rel="stylesheet" href="css/main.css" type="text/css">
+	</head>
+	
+	<body>
+		
+		<div id="doc4" class="yui-t1">
+			
+			<div id="hd">
+				<div style="float:left;">
+					<h1></h1>
+				</div>
+				<div id="search-box">
+					<input type="text" placeholder="Twitter Search">
+					<input type="button" value="Search">
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			
+			<div id="bd">
+				<div id="yui-main">
+					<div class="yui-b">
+						<div class="yui-ge">
+							<div class="yui-u first" id="timeline">
+								<div style="margin:5px 0px 15px 0px;" id="update-status-wrapper">
+									<img height="50" width="50" id="profile_image_url" src="">
+									<textarea id="compose-status" style="height:38px;width:517px;padding:5px 5px 5px 5px; float:Right;font-size:15px;"></textarea>
+									<div style="clear:both"></div>
+									<div style="float:right;">
+										<span id="character-count">140</span>
+										<input type="button" value="update" id="update-status" />
+									</div>
+									<div style="clear:both"></div>
+								</div>
+								<div style="clear:both"></div>
+								<div class="inner"></div>
+							</div>
+							<div class="yui-u hidden" id="sidebox">
+								<div align="right" class="pseudolink" id="link-close-sidebox">Close</div>
+								<div class="inner"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="yui-b" id="sidenav">
+					<div class="module" id="sidenav-login">
+						<ul>
+							<li><a href="#login=true">Login</a></li>
+						</ul>
+					</div>
+					
+					<div class="module" id="sidenav-timelines">
+						<h2>Timelines</h2>
+						<ul>
+							<li><a href="#timeline=home">Home</a></li>
+							<li><a href="#timeline=mentions">Mentions</a></li>
+							<li><a href="#timeline=sent">Sent</a></li>
+							<li><a href="#timeline=favorites">Favorites</a></li>
+							<li><a href="#timeline=dmin">DM - Received</a></li>
+							<li><a href="#timeline=dmout">DM - Sent</a></li>
+							<li><a href="#logout=true">Logout</a></li>
+						</ul>
+					</div>
+                    
+                    <div class="module" id="sidenav-lists">
+                        <h2>Lists</h2>
+                        <ul id="lists"></ul>
+                    </div>
+                    
+                    <div class="module" id="sidenav-list-subscriptions">
+                        <h2>Subscribed Lists</h2>
+                        <ul id="list-subscriptions"></ul>
+                    </div>
+					
+					<div class="module" id="sidenav-saved-searches">
+						<h2>Saved Searches</h2>
+						<ul id="saved-searches"></ul>
+					</div>
+
+					<div class="module" id="sidenav-trends">
+						<h2>Trends</h2>
+						<ul id="trends"></ul>
+					</div>
+
+					<div class="module" id="sidenav-rate-stats">
+						<div>Hits remaining: <span id="rate-remaining-hits"></span></div> 
+						<div>Minutes till reset: <span id="rate-reset-time"></span></div>
+					</div>
+					
+
+        			<div class="module" id="about">
+        			    <p>An <a href="#search=from:derek">@derek</a> production</p>
+        			    <p>Source code: <a href="https://github.com/derek/Tweetanium">Github</a></p>
+        			</div>
+				</div>
+				
+			</div>
+			
+			<div id="sidebox" class="hidden">
+				<div id="link-close-sidebox" class="pseudolink" align="right">Close</div>
+				<div class="inner"></div>
+			</div>
+			
+		</div>
+		<script>
+			// Some evil globals that should eventually be removed.
+			screen_name = '';
+			user_id = '';
+		</script>
+		<script type="text/javascript" src="http://yui.yahooapis.com/3.3.0/build/yui/yui-min.js"></script>
+		<script type="text/javascript" src="js/crock.js"></script>
+		<script type="text/javascript" src="js/general.js"></script>
+		<script type="text/javascript" src="js/yui_main.js"></script>
+		
+	</body>
+</html>

@@ -1,0 +1,122 @@
+#hd{
+	height:32px;
+	background-color:#dfdfdf;
+}
+
+#ft{
+	height:25px;
+	background-color:#dfdfdf;
+	display:none;
+}
+
+#bd {
+	padding:0px 6px 0px 6px;
+	background:white;
+}
+
+.tweet{
+	margin:5px 0px 0px 0px;
+}
+
+.hidden { 
+	display:none;
+}
+
+.tweet .tweet-image {
+	float: left;
+	width: 60px;
+	height: 60px;
+}
+
+.tweet .tweet-body {
+	position:relative;
+	left:5px;
+	top:3px;
+	overflow:hidden;
+	word-wrap: break-word;
+}
+
+.tweet .username {
+	font-weight:bold;
+}
+
+.tweet-footer,
+.tweet-footer a,
+.tweet-footer .pseudolink{
+	color:#C0C0C0;
+}
+
+.tweet-footer,
+.tweet-footer a{
+	text-decoration:none;
+}
+
+.tweet-extra{
+	margin:10px 0px 10px 0px;
+}
+
+.bold{
+	font-weight:bold;
+}
+
+a, .pseudolink {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.module {
+	border-bottom:solid 1px #DFDFDF;
+	padding:5px 0px 5px 0px;
+}
+
+.module h2 {
+	font-weight:bold;
+}
+
+.bucket {
+	border-bottom:solid #bfbfbf 2px;
+}
+
+#sidebox {
+	float:right;
+	position:absolute;
+	right:0px;
+	width: 185px;
+	background-color:#C0DFEC;
+	color:black;
+	padding:10px;
+	overflow:hidden;
+}
+
+#search-box{
+	position:relative;
+	top:5px;
+	padding-right:5px;
+	float:right;
+}
+
+#search-box input[type=text]{
+	background:url("http://s89997654.onlinehome.us/screencaps//mv_fp_icons_sprite_1.1.png_%28PNG_Image%2C_136x350_pixels%29-20100310-202129.jpg") no-repeat white 5px;
+	width:180px;
+	padding: 1px 0px 1px 20px;
+	height:20px;
+	border:none;
+	font-weight:bold;
+	color:#999999;
+}
+
+#sidenav .module,
+#update-status-wrapper{
+	display:none;
+}
+
+#sidenav #about {
+    text-align:center;
+    margin-top:50px;
+    display:block;
+	border-bottom:none;
+}
+
+.link-show-bucket {
+  text-align:center;
+}
