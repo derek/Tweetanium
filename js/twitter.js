@@ -64,7 +64,7 @@ YUI.add('Twitter', function (Y) {
 						break;
 
 					case "favorites":
-						yql = 'SELECT * FROM twitter.favorites ' + whereText + ' AND id="' + Y.StorageLite.getItem('screen_name');
+						yql = 'SELECT * FROM twitter.favorites WHERE id="' + config.screen_name + '" AND #oauth#';
 						break;
 
 					case "home":
