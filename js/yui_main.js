@@ -132,38 +132,58 @@ YUI({
 	
 	function renderLoggedInUI() {
 		// Load in the user's lists
-		Y.Twitter.call({type:"lists"}, function (lists) {
-			Y.Twitter.call({type:"list_subscriptions"}, function (subscriptions) {
-				var html='', i, List;
-				//Y.log(lists);
-				//Y.log(subscriptions);
-				// Merge the lists
-				lists = lists.concat(subscriptions);
-				
-				// Now sort them
-				lists.sort(function compare(a,b) {
-					if (a.name.toLowerCase() < b.name.toLowerCase()){
-						return -1;
-					}
-					if (a.name.toLowerCase() > b.name.toLowerCase()){
-						return 1;
-					}
-					return 0;
-				});
-				
-				for (i in lists) {
-					if (lists.hasOwnProperty(i)) {
-						List = Object.create(Y.List);
-						List.init(lists[i]);
-						html += List.asHtml();
-				    }
-				}
-				
-				Y.one("#lists").setContent(html);
-				
-				Y.one("#sidenav-lists").setStyle('display', 'block');
-			});
-		});
+        Y.Twitter.call({type:"lists"}, function (lists) {
+            var html='', i, List;
+            
+            // Now sort them
+            lists.sort(function compare(a,b) {
+                if (a.name.toLowerCase() < b.name.toLowerCase()){
+                    return -1;
+                }
+                if (a.name.toLowerCase() > b.name.toLowerCase()){
+                    return 1;
+                }
+                return 0;
+            });
+            
+            for (i in lists) {
+                if (lists.hasOwnProperty(i)) {
+                    List = Object.create(Y.List);
+                    List.init(lists[i]);
+                    html += List.asHtml();
+                }
+            }
+            
+            Y.one("#lists").setContent(html);
+            
+            Y.one("#sidenav-lists").setStyle('display', 'block');
+        });
+        
+        Y.Twitter.call({type:"list_subscriptions"}, function (lists) {
+            var html='', i, List;
+            // Now sort them
+            lists.sort(function compare(a,b) {
+                if (a.name.toLowerCase() < b.name.toLowerCase()){
+                    return -1;
+                }
+                if (a.name.toLowerCase() > b.name.toLowerCase()){
+                    return 1;
+                }
+                return 0;
+            });
+            
+            for (i in lists) {
+                if (lists.hasOwnProperty(i)) {
+                    List = Object.create(Y.List);
+                    List.init(lists[i]);
+                    html += List.asHtml();
+                }
+            }
+            
+            Y.one("#list-subscriptions").setContent(html);
+            
+            Y.one("#sidenav-list-subscriptions").setStyle('display', 'block');
+        });
 		
 		// Load in the user's saved searches
 		Y.Twitter.call({type: "saved_searches"}, function (searches) {
@@ -299,10 +319,10 @@ YUI({
 	
 	function searchBoxHandler(e) {
 		if (e.type === "focus") {
-			e.target.set("value", "").setStyle("color", "#000000");
+			e.target.setStyle("color", "#000000");
 		}
 		else if (e.type === "blur" && e.target.get("value") === "") {
-			e.target.set("value", "Twitter Search").setStyle("color", "#999999");
+			e.target.setStyle("color", "#999999");
 		}
 	}
 	
