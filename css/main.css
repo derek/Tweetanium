@@ -110,6 +110,13 @@ a, .pseudolink {
 	display:none;
 }
 
+#sidenav #about {
+    text-align:center;
+    margin-top:50px;
+    display:block;
+	border-bottom:none;
+}
+
 .link-show-bucket {
   text-align:center;
 }

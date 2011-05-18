@@ -203,6 +203,7 @@ YUI({
 
 
 		// Check on the rate limiting
+		/*
 		function checkRateLimitStatus() {
 			Y.Twitter.call({type: "rate_limit_status"}, function (response) {
 				var current_timestamp, minutes_till_reset, seconds_till_reset;
@@ -219,6 +220,7 @@ YUI({
 
 		setTimeout(checkRateLimitStatus, 2000); // Delayed a bit after page load
 		setInterval(checkRateLimitStatus, 75123); // Every 75 seconds, staggered
+		*/
 	}
 	
 	if(Y.StorageLite.getItem('oauth_token') != null) {
