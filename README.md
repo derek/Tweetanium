@@ -5,7 +5,7 @@ A Pure JavaScript Twitter Client.
 
 A few years ago I was working on [Tweenky](//github.com/derek/tweenky), a jQuery/PHP Twitter client.  I learned a lot from that project, but for a variety of reasons I decided to start over from scratch and write another one.  So, I started this project with the goal of doing it in 100% JavaScript, using YUI and YQL.  
 
-While Tweetanium uses OAuth to authenticate with Twitter, there is no server-side code, and this is made possible by using YQL in place of any server-side OAuth proxy.  You can read more about it here, [How-to: Secure OAuth in JavaScript](http://derekville.net/2010/how-to-secure-oauth-in-javascript/).
+While Tweetanium uses OAuth to authenticate with Twitter, there is no server-side code, and this is made possible by using YQL in place of any server-side OAuth proxy.  You can read more about it here, [How-to: Secure OAuth in JavaScript](http://derek.io/blog/2010/secure-oauth-in-javascript/).
 
 After initially launching this project at [tweetanium.net](//tweetanium.net), my development efforts go in spurts.  I'm not going to claim it's the best or most featured Twitter client out there, it's simply a playground for me to experiment with.
 
